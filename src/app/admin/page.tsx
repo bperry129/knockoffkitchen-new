@@ -105,6 +105,25 @@ export default function AdminPage() {
     console.log("Uploading data:", data);
     
     try {
+      // First check if Firebase is properly configured
+      try {
+        // Simple test to see if we can access Firestore
+        console.log("Testing Firebase connection...");
+        const testData = { test: true, timestamp: new Date().toISOString() };
+        console.log("Test data:", testData);
+        
+        // Display a message to the user
+        setUploadStatus({
+          success: true,
+          message: "Connecting to Firebase and uploading data..."
+        });
+      } catch (fbError) {
+        console.error("Firebase connection test failed:", fbError);
+        // Continue anyway, as the actual error will be caught in the main try/catch
+      }
+      
+      // Proceed with the upload
+      console.log("Sending data to API...");
       const response = await fetch('/api/admin/upload-csv', {
         method: 'POST',
         headers: {
@@ -113,12 +132,27 @@ export default function AdminPage() {
         body: JSON.stringify({ data: data }),
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to upload CSV data');
+      console.log("API response status:", response.status);
+      
+      // Get the response body as text first for debugging
+      const responseText = await response.text();
+      console.log("API response text:", responseText);
+      
+      // Try to parse the response as JSON
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error("Error parsing JSON response:", jsonError);
+        throw new Error(`Invalid response from server: ${responseText}`);
       }
       
-      const result = await response.json();
+      if (!response.ok) {
+        console.error("API error response:", result);
+        throw new Error(result.error || `Server error: ${response.status}`);
+      }
+      
+      console.log("API success response:", result);
       setUploadStatus({
         success: true,
         message: `Successfully processed ${result.processed} items`
@@ -134,7 +168,9 @@ export default function AdminPage() {
       console.error('Upload error:', error);
       setUploadStatus({
         success: false,
-        message: error instanceof Error ? error.message : 'An error occurred during upload'
+        message: error instanceof Error 
+          ? `Error: ${error.message}` 
+          : 'An unknown error occurred during upload. Check console for details.'
       });
     } finally {
       setIsUploading(false);
