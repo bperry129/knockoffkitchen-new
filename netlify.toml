@@ -4,10 +4,16 @@
   command = "npm ci && npm run build"
   publish = "out"
 
-# Standard SPA redirect - serve index.html for all routes
+# Specific redirect for recipe pages
+[[redirects]]
+  from = "/recipes/*"
+  to = "/recipes/[...slug].html"
+  status = 200
+
+# For all other paths, try to serve the requested path if it exists
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/:splat"
   status = 200
 
 # Add headers for CSS files to ensure proper loading

@@ -34,6 +34,15 @@ const nextConfig = {
     // Improve memory usage
     memoryBasedWorkersCount: true,
   },
+  // Custom rewrites for dynamic routes
+  async rewrites() {
+    return [
+      {
+        source: '/recipes/:slug',
+        destination: '/recipes/[slug]',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
