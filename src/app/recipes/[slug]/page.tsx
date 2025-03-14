@@ -77,6 +77,17 @@ export default async function RecipePage({ params }: { params: { slug: string } 
   );
 }
 
+// Generate static paths for all recipes
+export async function generateStaticParams() {
+  // In a real app, you would fetch all recipe slugs from an API or database
+  // For now, we'll just return the mock recipes
+  return [
+    { slug: 'pringles-bbq-chips-copycat' },
+    { slug: 'doritos-cool-ranch-copycat' },
+    { slug: 'lays-salt-vinegar-chips-copycat' }
+  ];
+}
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
   const recipeData = await getRecipeData(params.slug);

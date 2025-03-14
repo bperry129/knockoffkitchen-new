@@ -96,6 +96,17 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   );
 }
 
+// Generate static paths for all categories
+export async function generateStaticParams() {
+  // In a real app, you would fetch all category slugs from an API or database
+  // For now, we'll just return the mock categories
+  return [
+    { slug: 'chips' },
+    { slug: 'cookies' },
+    { slug: 'sauces' }
+  ];
+}
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
   const categoryData = await getCategoryData(params.slug);

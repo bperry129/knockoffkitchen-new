@@ -84,6 +84,17 @@ export default async function BrandPage({ params }: { params: { slug: string } }
   );
 }
 
+// Generate static paths for all brands
+export async function generateStaticParams() {
+  // In a real app, you would fetch all brand slugs from an API or database
+  // For now, we'll just return the mock brands
+  return [
+    { slug: 'pringles' },
+    { slug: 'doritos' },
+    { slug: 'lays' }
+  ];
+}
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
   const brandData = await getBrandData(params.slug);
