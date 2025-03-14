@@ -36,7 +36,7 @@ export default function RootLayout({
               <input
                 type="text"
                 placeholder="Search recipes..."
-                className="border border-gray-300 rounded-md px-4 py-2"
+                className="border border-gray-300 rounded-md px-4 py-2 w-64 focus:ring focus:ring-red-300 focus:outline-none transition duration-200"
               />
             </div>
             <button className="md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500">
