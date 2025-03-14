@@ -1,22 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Use static export
   output: 'export',
-  distDir: 'out',
-  images: {
-    unoptimized: true,
-  },
+  // Skip type checking during builds
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Skip linting during builds
   eslint: {
     ignoreDuringBuilds: true,
   },
   // Use trailing slash for consistent path handling
   trailingSlash: true,
-  // Set assetPrefix to relative path for better compatibility with Netlify
-  assetPrefix: './',
-  // No basePath for simplicity
-  basePath: '',
+  // Unoptimized images for static export
+  images: {
+    unoptimized: true,
+  },
 };
 
 module.exports = nextConfig;

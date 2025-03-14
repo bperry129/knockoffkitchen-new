@@ -1,7 +1,7 @@
 # Netlify configuration for Next.js 14 static export
 [build]
-  # Use the custom netlify-build script from package.json
-  command = "npm ci && npm run netlify-build"
+  # Use the standard build command
+  command = "npm ci && npm run build"
   publish = "out"
 
 # Handle client-side routing for Next.js
