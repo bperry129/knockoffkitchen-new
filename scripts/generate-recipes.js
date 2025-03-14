@@ -15,8 +15,17 @@ const firebaseConfig = {
 };
 
 // DeepSeek API configuration
-const OPENROUTER_API_KEY = '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';
+// We're using environment variables to keep the API key secret
+// The API key should be provided when running the script
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const MODEL = 'deepseek/deepseek-r1-distill-llama-70b';
+
+// Check if API key is provided
+if (!OPENROUTER_API_KEY) {
+  console.error('Error: OPENROUTER_API_KEY environment variable is required');
+  console.error('Run the script with: OPENROUTER_API_KEY=your_key node scripts/generate-recipes.js');
+  process.exit(1);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
