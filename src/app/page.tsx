@@ -1,4 +1,5 @@
 import Image from "next/image";
+// Import the unoptimized image component
 import Link from "next/link";
 
 // Define types for our featured content

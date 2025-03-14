@@ -1,19 +1,13 @@
-# Netlify configuration for Next.js with App Router
+# Netlify configuration for Next.js static export
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
-# Use the Netlify Next.js plugin
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# For fallback routes in Next.js
+# Handle client-side routing for Next.js
 [[redirects]]
   from = "/*"
-  to = "/_ipx"
+  to = "/index.html"
   status = 200
-  force = false
-  conditions = {Country = ["US"]}
 
   ## (optional) Settings for Netlify Dev
   ## https://github.com/netlify/cli/blob/main/docs/netlify-dev.md#project-detection
