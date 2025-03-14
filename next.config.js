@@ -31,8 +31,6 @@ const nextConfig = {
   },
   // Experimental features to improve performance
   experimental: {
-    // Optimize CSS
-    optimizeCss: true,
     // Improve memory usage
     memoryBasedWorkersCount: true,
   },
