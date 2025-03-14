@@ -1,84 +1,58 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import { getBrandBySlug, getRecipesByBrand, getAllBrandSlugs } from '@/lib/api';
 
-// Define the Brand type
-interface Brand {
-  name: string;
-  description: string;
-  foundedYear: number;
-  headquarters: string;
-  famousProducts: Array<{
-    name: string;
-    slug: string;
-  }>;
-}
-
-// This is a placeholder for actual data fetching
-const getBrandData = async (slug: string): Promise<Brand | null> => {
-  // In a real app, you would fetch data from an API or database
-  // For now, we'll just return mock data
-  const mockBrands: Record<string, Brand> = {
-    'pringles': {
-      name: 'Pringles',
-      description: 'Pringles is an American brand of stackable potato-based chips. Originally developed by Procter & Gamble in 1967 and marketed as "Pringle\'s Newfangled Potato Chips", the brand was sold to Kellogg\'s in 2012.',
-      foundedYear: 1967,
-      headquarters: 'Battle Creek, Michigan, USA',
-      famousProducts: [
-        {
-          name: 'BBQ Pringles',
-          slug: 'pringles-bbq-chips-copycat'
-        },
-        {
-          name: 'Original Pringles',
-          slug: 'pringles-original-chips-copycat'
-        },
-        {
-          name: 'Sour Cream & Onion Pringles',
-          slug: 'pringles-sour-cream-onion-copycat'
-        }
-      ]
-    }
-  };
-
-  return slug in mockBrands ? mockBrands[slug] : null;
-};
-
-// Use the correct Next.js types
 export default async function BrandPage({ params }: { params: { slug: string } }) {
-  const brandData = await getBrandData(params.slug);
+  const brand = await getBrandBySlug(params.slug);
   
-  if (!brandData) {
+  if (!brand) {
     notFound();
   }
+  
+  // Get recipes for this brand
+  const recipes = await getRecipesByBrand(params.slug);
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-4">{brandData.name}</h1>
+      <h1 className="text-3xl font-bold mb-4">{brand.name}</h1>
       <div className="bg-gray-100 p-4 rounded-lg mb-8">
-        <p className="text-gray-700 mb-4">{brandData.description}</p>
+        <p className="text-gray-700 mb-4">{brand.description}</p>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="font-semibold">Founded:</span> {brandData.foundedYear}
+            <span className="font-semibold">Founded:</span> {brand.foundedYear}
           </div>
           <div>
-            <span className="font-semibold">Headquarters:</span> {brandData.headquarters}
+            <span className="font-semibold">Headquarters:</span> {brand.headquarters}
           </div>
         </div>
       </div>
       
       <div>
-        <h2 className="text-2xl font-semibold mb-4">Famous Products</h2>
-        <p className="mb-4">Try our copycat recipes for these popular {brandData.name} products:</p>
-        <ul className="space-y-2">
-          {brandData.famousProducts.map((product, index) => (
-            <li key={index} className="border-b border-gray-200 pb-2">
-              <Link href={`/recipes/${product.slug}`} className="text-blue-600 hover:underline">
-                {product.name}
-              </Link>
-            </li>
+        <h2 className="text-2xl font-semibold mb-4">Copycat Recipes</h2>
+        <p className="mb-4">Try our copycat recipes for these popular {brand.name} products:</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {recipes.map((recipe, index) => (
+            <div key={index} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">
+                  <Link href={`/recipes/${recipe.slug}`} className="text-blue-600 hover:underline">
+                    {recipe.title}
+                  </Link>
+                </h3>
+                <p className="text-gray-600 mb-4">{recipe.description}</p>
+                <Link 
+                  href={`/recipes/${recipe.slug}`}
+                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                >
+                  View Recipe
+                </Link>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
@@ -86,20 +60,14 @@ export default async function BrandPage({ params }: { params: { slug: string } }
 
 // Generate static paths for all brands
 export async function generateStaticParams() {
-  // In a real app, you would fetch all brand slugs from an API or database
-  // For now, we'll just return the mock brands
-  return [
-    { slug: 'pringles' },
-    { slug: 'doritos' },
-    { slug: 'lays' }
-  ];
+  return await getAllBrandSlugs();
 }
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
-  const brandData = await getBrandData(params.slug);
+  const brand = await getBrandBySlug(params.slug);
   
-  if (!brandData) {
+  if (!brand) {
     return {
       title: 'Brand Not Found',
       description: 'The requested brand could not be found.'
@@ -107,8 +75,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
   
   return {
-    title: `${brandData.name} Copycat Recipes | KnockoffKitchen`,
-    description: `Learn how to make your favorite ${brandData.name} products at home with our copycat recipes.`,
-    keywords: ['copycat recipes', brandData.name, 'homemade', 'DIY'],
+    title: `${brand.name} Copycat Recipes | KnockoffKitchen`,
+    description: `Learn how to make your favorite ${brand.name} products at home with our copycat recipes.`,
+    keywords: ['copycat recipes', brand.name, 'homemade', 'DIY'],
   };
 }

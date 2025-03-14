@@ -1,87 +1,15 @@
 import Image from "next/image";
-// Import the unoptimized image component
 import Link from "next/link";
+import { getAllRecipes, getAllCategories, getAllBrands } from "@/lib/api";
 
-// Define types for our featured content
-interface FeaturedRecipe {
-  title: string;
-  slug: string;
-  description: string;
-  brand: string;
-  brandSlug: string;
-}
-
-interface FeaturedCategory {
-  name: string;
-  slug: string;
-  description: string;
-}
-
-interface FeaturedBrand {
-  name: string;
-  slug: string;
-  logo?: string;
-}
-
-// Mock data for featured content
-const featuredRecipes: FeaturedRecipe[] = [
-  {
-    title: "Copycat Pringles BBQ Chips",
-    slug: "pringles-bbq-chips-copycat",
-    description: "Make your own BBQ Pringles at home with this copycat recipe.",
-    brand: "Pringles",
-    brandSlug: "pringles"
-  },
-  {
-    title: "Copycat Doritos Cool Ranch",
-    slug: "doritos-cool-ranch-copycat",
-    description: "Recreate the classic Cool Ranch Doritos flavor at home.",
-    brand: "Doritos",
-    brandSlug: "doritos"
-  },
-  {
-    title: "Copycat Lay's Salt & Vinegar Chips",
-    slug: "lays-salt-vinegar-chips-copycat",
-    description: "The perfect tangy and salty homemade potato chips.",
-    brand: "Lay's",
-    brandSlug: "lays"
-  }
-];
-
-const featuredCategories: FeaturedCategory[] = [
-  {
-    name: "Chips & Crisps",
-    slug: "chips",
-    description: "Make your favorite store-bought chips at home."
-  },
-  {
-    name: "Cookies",
-    slug: "cookies",
-    description: "Recreate famous cookies with our copycat recipes."
-  },
-  {
-    name: "Sauces & Dips",
-    slug: "sauces",
-    description: "Secret sauce recipes from your favorite restaurants."
-  }
-];
-
-const featuredBrands: FeaturedBrand[] = [
-  {
-    name: "Pringles",
-    slug: "pringles"
-  },
-  {
-    name: "Doritos",
-    slug: "doritos"
-  },
-  {
-    name: "Lay's",
-    slug: "lays"
-  }
-];
-
-export default function Home() {
+export default async function Home() {
+  // Fetch data
+  const allRecipes = await getAllRecipes();
+  const allCategories = await getAllCategories();
+  const allBrands = await getAllBrands();
+  
+  // Use the first 3 recipes as featured recipes
+  const featuredRecipes = allRecipes.slice(0, 3);
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -123,7 +51,7 @@ export default function Home() {
                       {recipe.title}
                     </Link>
                   </h3>
-                  <p className="text-sm text-gray-500 mb-3">
+                  <p className="text-sm text-gray-500 mb-2">
                     Brand: <Link href={`/brand/${recipe.brandSlug}`} className="text-blue-500 hover:underline">
                       {recipe.brand}
                     </Link>
@@ -147,7 +75,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Browse by Category</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredCategories.map((category, index) => (
+            {allCategories.map((category, index) => (
               <Link 
                 key={index} 
                 href={`/category/${category.slug}`}
@@ -166,7 +94,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Popular Brands</h2>
           <div className="flex flex-wrap justify-center gap-6">
-            {featuredBrands.map((brand, index) => (
+            {allBrands.map((brand, index) => (
               <Link 
                 key={index} 
                 href={`/brand/${brand.slug}`}
