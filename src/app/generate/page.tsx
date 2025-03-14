@@ -62,12 +62,18 @@ export default function GenerateRecipePage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('main'); // For tabbed navigation
+  const [dbSaveStatus, setDbSaveStatus] = useState<{
+    success: boolean;
+    message: string;
+    id?: string;
+  } | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setRecipe(null);
+    setDbSaveStatus(null);
 
     try {
       const response = await fetch('/api/generate-recipe', {
@@ -84,7 +90,26 @@ export default function GenerateRecipePage() {
       }
 
       const data = await response.json();
-      setRecipe(data);
+      
+      // Check if the recipe was saved to the database
+      if (data.id) {
+        setDbSaveStatus({
+          success: true,
+          message: 'Recipe saved to database successfully!',
+          id: data.id
+        });
+      } else if (data.dbSaveError) {
+        setDbSaveStatus({
+          success: false,
+          message: `Recipe generated but not saved to database: ${data.dbErrorMessage || 'Unknown error'}`
+        });
+        // Remove the error properties from the recipe data
+        const { dbSaveError, dbErrorMessage, ...recipeData } = data;
+        setRecipe(recipeData);
+      } else {
+        setRecipe(data);
+      }
+      
       setActiveTab('main'); // Reset to main tab when new recipe is generated
     } catch (err: unknown) {
       const errorMessage = err instanceof Error 
@@ -225,6 +250,34 @@ export default function GenerateRecipePage() {
             </div>
             <div className="ml-3">
               <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {dbSaveStatus && (
+        <div className={`${dbSaveStatus.success ? 'bg-green-50 border-green-500' : 'bg-yellow-50 border-yellow-500'} border-l-4 p-4 mb-8`}>
+          <div className="flex">
+            <div className="flex-shrink-0">
+              {dbSaveStatus.success ? (
+                <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div className="ml-3">
+              <p className={`text-sm ${dbSaveStatus.success ? 'text-green-700' : 'text-yellow-700'}`}>
+                {dbSaveStatus.message}
+              </p>
+              {dbSaveStatus.id && (
+                <p className="text-sm text-green-600 mt-1">
+                  Recipe ID: {dbSaveStatus.id}
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -1,4 +1,16 @@
 import axios from 'axios';
+import { db } from '../../../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+// Function to generate a URL-friendly slug from the recipe title
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with a single hyphen
+    .trim(); // Trim leading/trailing spaces or hyphens
+}
 
 // Store API key securely - in production, use environment variables
 const OPENROUTER_API_KEY = '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';
@@ -167,12 +179,44 @@ Format the response as a JSON object with the following structure:
     // Extract the recipe JSON from the response
     const recipe = JSON.parse(response.data.choices[0].message.content);
 
-    return new Response(JSON.stringify(recipe), { 
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    // Add metadata for database storage
+    const recipeWithMetadata = {
+      ...recipe,
+      productName,
+      brandName,
+      createdAt: serverTimestamp(),
+      slug: generateSlug(recipe.title),
+    };
+
+    // Save recipe to Firestore
+    try {
+      const docRef = await addDoc(collection(db, "recipes"), recipeWithMetadata);
+      console.log("Recipe saved with ID: ", docRef.id);
+      
+      // Return the recipe with the document ID
+      return new Response(JSON.stringify({ 
+        ...recipe, 
+        id: docRef.id 
+      }), { 
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (dbError) {
+      console.error("Error saving to database:", dbError);
+      // Still return the recipe even if database save fails
+      return new Response(JSON.stringify({ 
+        ...recipe, 
+        dbSaveError: true,
+        dbErrorMessage: dbError.message
+      }), { 
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
   } catch (error) {
     console.error('Recipe generation error:', error);
     return new Response(JSON.stringify({ 
