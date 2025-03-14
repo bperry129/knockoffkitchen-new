@@ -5,6 +5,42 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
+// Fallback data for static site generation
+const fallbackRecipes = [
+  {
+    id: 'fallback1',
+    title: 'Homemade Doritos Nacho Cheese',
+    category: 'Chips',
+    introduction: 'Make your own crispy, cheesy Doritos at home with this copycat recipe that tastes just like the original!',
+    recipeDetails: {
+      prepTime: '20 minutes',
+      cookTime: '15 minutes',
+      totalTime: '35 minutes',
+      yield: '6 servings'
+    },
+    productName: 'Doritos Nacho Cheese',
+    brandName: 'Doritos',
+    slug: 'homemade-doritos-nacho-cheese',
+    createdAt: { seconds: 1647532800, nanoseconds: 0 }
+  },
+  {
+    id: 'fallback2',
+    title: 'Homemade Oreo Cookies',
+    category: 'Cookies',
+    introduction: 'Recreate the magic of America\'s favorite cookie with this spot-on Oreo copycat recipe!',
+    recipeDetails: {
+      prepTime: '30 minutes',
+      cookTime: '10 minutes',
+      totalTime: '40 minutes',
+      yield: '24 cookies'
+    },
+    productName: 'Oreo Cookies',
+    brandName: 'Nabisco',
+    slug: 'homemade-oreo-cookies',
+    createdAt: { seconds: 1647532800, nanoseconds: 0 }
+  }
+];
+
 interface Recipe {
   id: string;
   title: string;

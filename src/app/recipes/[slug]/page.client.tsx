@@ -186,13 +186,18 @@ interface Recipe {
 // Define the props type for the page component
 interface PageProps {
   params: { slug: string };
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParamsEntries?: [string, string | string[] | undefined][];
 }
 
 export default function RecipeDetailClientPage(props: PageProps) {
   const params = useParams();
   // Use the slug from props if available, otherwise fallback to useParams
   const slug = props.params?.slug || params.slug as string;
+  
+  // Convert searchParamsEntries back to an object if needed
+  const searchParams = props.searchParamsEntries ? 
+    Object.fromEntries(props.searchParamsEntries) : 
+    {};
   
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);

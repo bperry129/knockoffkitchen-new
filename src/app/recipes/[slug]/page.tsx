@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 // Define the props type for the page component
 interface PageProps {
   params: { slug: string };
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 // Simple loading component to use with Suspense
@@ -35,10 +35,16 @@ function LoadingFallback() {
 
 // This is a server component that exports generateStaticParams
 // and renders the client component with Suspense for better performance
-export default function RecipeDetailPage(props: PageProps) {
+export default function RecipeDetailPage({ params, searchParams = {} }: PageProps) {
+  // Pass individual properties instead of the searchParams object
+  const searchParamsEntries = Object.entries(searchParams);
+  
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <ClientPage {...props} />
+      <ClientPage 
+        params={params} 
+        searchParamsEntries={searchParamsEntries} 
+      />
     </Suspense>
   );
 }
