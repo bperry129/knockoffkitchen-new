@@ -14,11 +14,12 @@ const firebaseConfig = {
   measurementId: "G-0S2PLVWNVG"
 };
 
-// DeepSeek API configuration
+// OpenRouter API configuration
 // We're using environment variables to keep the API key secret
 // The API key should be provided when running the script
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const MODEL = 'deepseek/deepseek-r1-distill-llama-70b';
+// Using Claude 3 Opus instead of DeepSeek as it might be more reliable
+const MODEL = 'anthropic/claude-3-opus:beta';
 
 // Check if API key is provided
 if (!OPENROUTER_API_KEY) {
@@ -202,16 +203,38 @@ Format the response as a JSON object with the following structure:
       }
     );
 
+    // Log the raw response for debugging
+    console.log('Raw API response received');
+    console.log('Response status:', response.status);
+    console.log('Response data:', JSON.stringify(response.data, null, 2));
+    
+    // Check if the response has the expected structure
+    if (!response.data || !response.data.choices || !response.data.choices[0] || !response.data.choices[0].message || !response.data.choices[0].message.content) {
+      console.error('Unexpected API response structure:', JSON.stringify(response.data, null, 2));
+      throw new Error('Invalid API response structure');
+    }
+    
+    const content = response.data.choices[0].message.content;
+    console.log('Response content:', content);
+    
     // Extract the recipe JSON from the response
-    const recipe = JSON.parse(response.data.choices[0].message.content);
+    const recipe = JSON.parse(content);
     console.log(`Recipe generated: ${recipe.title}`);
     
     return recipe;
   } catch (error) {
     console.error('Error generating recipe:', error.message);
+    
     if (error.response) {
-      console.error('API response:', error.response.data);
+      console.error('API response status:', error.response.status);
+      console.error('API response headers:', JSON.stringify(error.response.headers, null, 2));
+      console.error('API response data:', JSON.stringify(error.response.data, null, 2));
+    } else if (error instanceof SyntaxError) {
+      console.error('JSON parsing error. The API response was not valid JSON.');
+      console.error('This could be due to rate limiting or an issue with the API.');
+      console.error('Try again later or check your API key permissions.');
     }
+    
     throw error;
   }
 }
