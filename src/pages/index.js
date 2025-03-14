@@ -449,8 +449,6 @@ export async function getStaticProps() {
       allRecipes,
       allCategories,
       allBrands,
-    },
-    // Revalidate every hour
-    revalidate: 3600,
+    }
   };
 }
