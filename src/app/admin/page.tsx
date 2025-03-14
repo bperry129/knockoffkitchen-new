@@ -24,29 +24,35 @@ export default function AdminPage() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setCsvFile(file);
+      console.log("File selected:", file.name);
       
       // Parse CSV file
       Papa.parse(file, {
         header: true,
         complete: (results) => {
-          // Validate CSV structure
-          const data = results.data as CSVRow[];
-          const isValid = data.every(row => 
-            'productname' in row && 
-            'brand' in row && 
-            'image_url' in row
-          );
+          console.log("CSV parsing complete:", results);
           
-          if (isValid) {
-            setCsvData(data);
-          } else {
-            alert("CSV file must have columns: productname, brand, image_url");
-            setCsvData([]);
+          // Always set the data, even if validation fails
+          const data = results.data as CSVRow[];
+          setCsvData(data);
+          
+          // Log the data for debugging
+          console.log("CSV data:", data);
+          
+          // Validate CSV structure but don't block on it
+          const hasRequiredColumns = data.length > 0 && 
+            'productname' in data[0] && 
+            'brand' in data[0] && 
+            'image_url' in data[0];
+          
+          if (!hasRequiredColumns) {
+            console.warn("CSV missing required columns");
+            alert("Warning: CSV file should have columns: productname, brand, image_url");
           }
         },
         error: (error) => {
           console.error('CSV parsing error:', error);
-          alert("Error parsing CSV file");
+          alert("Error parsing CSV file, but you can still try to upload");
         }
       });
     }
@@ -54,13 +60,49 @@ export default function AdminPage() {
 
   // Upload CSV data to Firebase
   const handleUpload = async () => {
-    if (csvData.length === 0) {
-      alert("Please select a valid CSV file first");
+    // If no file is selected or no data is parsed, show a warning but continue
+    if (!csvFile) {
+      console.warn("No file selected");
+      alert("No file selected. Please select a CSV file first.");
       return;
     }
     
+    if (csvData.length === 0) {
+      console.warn("No data to upload");
+      // Try to parse the file again
+      if (csvFile) {
+        console.log("Attempting to parse file again");
+        Papa.parse(csvFile, {
+          header: true,
+          complete: async (results) => {
+            console.log("Re-parsing complete:", results);
+            const data = results.data as CSVRow[];
+            if (data.length > 0) {
+              setCsvData(data);
+              // Continue with upload using the newly parsed data
+              await uploadData(data);
+            } else {
+              alert("Could not extract any data from the CSV file");
+            }
+          },
+          error: (error) => {
+            console.error("Re-parsing error:", error);
+            alert("Error parsing the CSV file");
+          }
+        });
+      }
+      return;
+    }
+    
+    // If we have data, proceed with upload
+    await uploadData(csvData);
+  };
+  
+  // Function to handle the actual upload
+  const uploadData = async (data: CSVRow[]) => {
     setIsUploading(true);
     setUploadStatus(null);
+    console.log("Uploading data:", data);
     
     try {
       const response = await fetch('/api/admin/upload-csv', {
@@ -68,7 +110,7 @@ export default function AdminPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data: csvData }),
+        body: JSON.stringify({ data: data }),
       });
       
       if (!response.ok) {
@@ -140,9 +182,9 @@ export default function AdminPage() {
 
         <button
           onClick={handleUpload}
-          disabled={!csvFile || isUploading}
+          disabled={isUploading}
           className={`w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-md shadow-md hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ${
-            !csvFile || isUploading ? 'opacity-70 cursor-not-allowed' : ''
+            isUploading ? 'opacity-70 cursor-not-allowed' : ''
           }`}
         >
           {isUploading ? 'Uploading...' : 'Upload and Process CSV'}
