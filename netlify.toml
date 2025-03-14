@@ -7,9 +7,13 @@
 # Handle client-side routing for Next.js
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
   status = 200
-  force = true
 
 # Add headers for CSS files to ensure proper loading
 [[headers]]
