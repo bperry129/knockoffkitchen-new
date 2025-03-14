@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, FormEvent, ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import Link from 'next/link';
 import Papa from 'papaparse';
 
@@ -15,8 +14,12 @@ interface CSVRow {
 }
 
 export default function AdminPage() {
+  // Authentication state
+  const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState('');
+  
+  // CSV handling state
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -24,23 +27,19 @@ export default function AdminPage() {
     success: boolean;
     message: string;
   } | null>(null);
-  const router = useRouter();
 
   // Handle password submission
-  const handlePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Password submitted:", password, "Expected:", ADMIN_PASSWORD);
+    console.log("Login attempt with password:", password);
     
-    // Force re-render by setting state even if it's the same value
     if (password === ADMIN_PASSWORD) {
-      console.log("Password is correct, authenticating...");
-      setIsAuthenticated(true);
-      // Add a small delay to ensure state update is processed
-      setTimeout(() => {
-        console.log("Authentication state:", isAuthenticated);
-      }, 100);
+      console.log("Password correct, authenticating...");
+      setAuthenticated(true);
+      setAuthError('');
     } else {
-      alert("Incorrect password");
+      console.log("Password incorrect");
+      setAuthError('Incorrect password. Please try again.');
     }
   };
 
@@ -123,12 +122,19 @@ export default function AdminPage() {
     }
   };
 
-  // If not authenticated, show login form
-  if (!isAuthenticated) {
+  // Login form
+  if (!authenticated) {
     return (
       <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">Admin Login</h1>
-        <form onSubmit={handlePasswordSubmit} className="space-y-4">
+        
+        {authError && (
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md">
+            {authError}
+          </div>
+        )}
+        
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -153,17 +159,25 @@ export default function AdminPage() {
     );
   }
 
-  // Admin dashboard
+  // Admin dashboard (only shown when authenticated)
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold font-serif">Admin Dashboard</h1>
-        <Link 
-          href="/"
-          className="text-indigo-600 hover:text-indigo-800 transition-colors"
-        >
-          ← Back to Home
-        </Link>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setAuthenticated(false)}
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            Logout
+          </button>
+          <Link 
+            href="/"
+            className="text-indigo-600 hover:text-indigo-800 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
