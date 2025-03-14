@@ -43,13 +43,8 @@ const getRecipeData = async (slug: string): Promise<Recipe | null> => {
   return slug in mockRecipes ? mockRecipes[slug] : null;
 };
 
-// Define the PageProps interface to match Next.js App Router requirements
-interface PageProps {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function RecipePage({ params }: PageProps) {
+// Use the correct Next.js types
+export default async function RecipePage({ params }: { params: { slug: string } }) {
   const recipeData = await getRecipeData(params.slug);
   
   if (!recipeData) {
@@ -83,7 +78,7 @@ export default async function RecipePage({ params }: PageProps) {
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: PageProps): Promise<any> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
   const recipeData = await getRecipeData(params.slug);
   
   if (!recipeData) {
