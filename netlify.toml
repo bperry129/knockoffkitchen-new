@@ -9,6 +9,14 @@
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
+
+# Specific redirect for recipe pages
+[[redirects]]
+  from = "/recipes/*"
+  to = "/recipes/[slug]/index.html"
+  status = 200
+  force = true
 
 # Add headers for CSS files to ensure proper loading
 [[headers]]
