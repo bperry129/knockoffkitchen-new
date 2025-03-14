@@ -52,7 +52,13 @@ const getCategoryData = async (slug: string): Promise<Category | null> => {
   return slug in mockCategories ? mockCategories[slug] : null;
 };
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
+// Define the PageProps interface to match Next.js App Router requirements
+interface PageProps {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function CategoryPage({ params }: PageProps) {
   const categoryData = await getCategoryData(params.slug);
   
   if (!categoryData) {
@@ -96,7 +102,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
+export async function generateMetadata({ params }: PageProps): Promise<any> {
   const categoryData = await getCategoryData(params.slug);
   
   if (!categoryData) {

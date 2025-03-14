@@ -44,7 +44,13 @@ const getBrandData = async (slug: string): Promise<Brand | null> => {
   return slug in mockBrands ? mockBrands[slug] : null;
 };
 
-export default async function BrandPage({ params }: { params: { slug: string } }) {
+// Define the PageProps interface to match Next.js App Router requirements
+interface PageProps {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function BrandPage({ params }: PageProps) {
   const brandData = await getBrandData(params.slug);
   
   if (!brandData) {
@@ -84,7 +90,7 @@ export default async function BrandPage({ params }: { params: { slug: string } }
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
+export async function generateMetadata({ params }: PageProps): Promise<any> {
   const brandData = await getBrandData(params.slug);
   
   if (!brandData) {
