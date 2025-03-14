@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  distDir: 'out',
   images: {
     unoptimized: true,
   },
@@ -11,7 +12,8 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   trailingSlash: true,
-  // Remove the webpack configuration that might be causing issues
+  assetPrefix: '/',
+  basePath: '',
 };
 
 module.exports = nextConfig;
