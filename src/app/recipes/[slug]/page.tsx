@@ -6,6 +6,9 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { useParams } from 'next/navigation';
 
+// Note: generateStaticParams is imported from a separate file
+// to avoid mixing client and server components
+
 interface Recipe {
   id: string;
   title: string;
