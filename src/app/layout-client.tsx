@@ -97,6 +97,14 @@ export default function RootLayoutClient({
               <span>Home</span>
             </Link>
             <Link 
+              href="/recipes" 
+              className="whitespace-nowrap transition-all duration-300"
+              style={styles.navLink}
+            >
+              <i className="fas fa-book-open"></i>
+              <span>Recipes</span>
+            </Link>
+            <Link 
               href="/category/chips" 
               className="whitespace-nowrap transition-all duration-300"
               style={styles.navLink}
@@ -183,6 +191,12 @@ export default function RootLayoutClient({
                       <Link href="/" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
                         <i className="fas fa-chevron-right text-xs"></i>
                         <span>Home</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/recipes" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
+                        <i className="fas fa-chevron-right text-xs"></i>
+                        <span>Recipes</span>
                       </Link>
                     </li>
                     <li>

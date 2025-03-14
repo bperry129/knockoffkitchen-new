@@ -18,8 +18,8 @@ const firebaseConfig = {
 // We're using environment variables to keep the API key secret
 // The API key should be provided when running the script
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-// Using Claude 3 Opus instead of DeepSeek as it might be more reliable
-const MODEL = 'anthropic/claude-3-opus:beta';
+// Using a smaller DeepSeek model for cost efficiency
+const MODEL = 'deepseek/deepseek-r1-distill-llama-8b';
 
 // Check if API key is provided
 if (!OPENROUTER_API_KEY) {

@@ -1,0 +1,178 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
+
+interface Recipe {
+  id: string;
+  title: string;
+  category: string;
+  introduction: string;
+  recipeDetails: {
+    prepTime: string;
+    cookTime: string;
+    totalTime: string;
+    yield: string;
+  };
+  productName: string;
+  brandName: string;
+  slug: string;
+  createdAt: any;
+}
+
+export default function RecipesPage() {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  useEffect(() => {
+    async function fetchRecipes() {
+      try {
+        setLoading(true);
+        const recipesQuery = query(collection(db, "recipes"), orderBy("createdAt", "desc"));
+        const recipesSnapshot = await getDocs(recipesQuery);
+        
+        if (recipesSnapshot.empty) {
+          setRecipes([]);
+          setLoading(false);
+          return;
+        }
+        
+        const recipesData = recipesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Recipe[];
+        
+        // Extract unique categories
+        const uniqueCategories = Array.from(new Set(recipesData.map(recipe => recipe.category)))
+          .filter(Boolean) // Remove empty categories
+          .sort();
+        
+        setRecipes(recipesData);
+        setCategories(uniqueCategories);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching recipes:', err);
+        setError('Failed to load recipes. Please try again later.');
+        setLoading(false);
+      }
+    }
+    
+    fetchRecipes();
+  }, []);
+
+  // Filter recipes by category
+  const filteredRecipes = selectedCategory === 'all' 
+    ? recipes 
+    : recipes.filter(recipe => recipe.category === selectedCategory);
+
+  return (
+    <div className="max-w-6xl mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-6 font-serif text-center">Copycat Recipes</h1>
+      
+      {/* Category Filter */}
+      {categories.length > 0 && (
+        <div className="mb-8">
+          <div className="flex flex-wrap justify-center gap-2">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-4 py-2 rounded-full text-sm font-medium ${
+                selectedCategory === 'all'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              All Recipes
+            </button>
+            
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  selectedCategory === category
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4">
+          <p className="text-red-700">{error}</p>
+        </div>
+      ) : filteredRecipes.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No recipes found.</p>
+          {selectedCategory !== 'all' && (
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className="mt-4 text-indigo-600 hover:text-indigo-800"
+            >
+              View all recipes
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredRecipes.map(recipe => (
+            <div key={recipe.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="p-6">
+                <div className="flex items-center mb-2">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    {recipe.category || 'Uncategorized'}
+                  </span>
+                </div>
+                
+                <h2 className="text-xl font-bold mb-2 line-clamp-2">{recipe.title}</h2>
+                
+                <p className="text-gray-600 mb-4 text-sm">
+                  <span className="font-medium">Original:</span> {recipe.productName} by {recipe.brandName}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-4 text-xs text-gray-500">
+                  <span>Prep: {recipe.recipeDetails.prepTime}</span>
+                  <span>•</span>
+                  <span>Cook: {recipe.recipeDetails.cookTime}</span>
+                  <span>•</span>
+                  <span>Yield: {recipe.recipeDetails.yield}</span>
+                </div>
+                
+                <p className="text-gray-600 mb-4 line-clamp-3">{recipe.introduction}</p>
+                
+                <Link 
+                  href={`/recipes/${recipe.slug}`}
+                  className="inline-block bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-md px-4 py-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300"
+                >
+                  View Recipe
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      <div className="mt-12 text-center">
+        <Link 
+          href="/"
+          className="text-indigo-600 hover:text-indigo-800 transition-colors"
+        >
+          ← Back to Home
+        </Link>
+      </div>
+    </div>
+  );
+}
