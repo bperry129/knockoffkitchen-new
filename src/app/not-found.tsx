@@ -1,10 +1,3 @@
-// Metadata export (Server Component)
-export const metadata = {
-  title: 'Page Not Found',
-  description: 'The requested page could not be found.',
-};
-
-// Client Component for the actual UI
 "use client";
 
 import Link from 'next/link';
