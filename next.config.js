@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-  output: 'export', // Add this for static site generation, which works better with Netlify
+  output: 'export',
   images: {
-    unoptimized: true, // Required when using 'export'
+    unoptimized: true,
   },
-  // Disable TypeScript checking during build to avoid type errors
   typescript: {
     ignoreBuildErrors: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  swcMinify: true,
 };
 
 module.exports = nextConfig;

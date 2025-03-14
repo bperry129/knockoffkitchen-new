@@ -1,6 +1,6 @@
-# Netlify configuration for Next.js static export
+# Netlify configuration for Next.js 14 static export
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "out"
 
 # Handle client-side routing for Next.js
@@ -8,6 +8,7 @@
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
 
   ## (optional) Settings for Netlify Dev
   ## https://github.com/netlify/cli/blob/main/docs/netlify-dev.md#project-detection
