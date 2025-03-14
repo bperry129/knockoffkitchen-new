@@ -12,7 +12,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   trailingSlash: true,
-  assetPrefix: '/',
+  // Remove assetPrefix as it might be causing path issues
   basePath: '',
 };
 
