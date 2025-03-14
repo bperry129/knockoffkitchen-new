@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getAllRecipes, getAllCategories, getAllBrands } from "@/lib/api";
 
@@ -10,132 +9,104 @@ export default async function Home() {
   
   // Use the first 3 recipes as featured recipes
   const featuredRecipes = allRecipes.slice(0, 3);
+  
+  // Define category images (in a real app, these would come from the API)
+  const categoryImages = {
+    'chips': '/images/chips.jpg',
+    'cookies': '/images/cookies.jpg',
+    'sauces': '/images/condiments.jpg'
+  };
+  
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">KnockoffKitchen</h1>
-            <p className="text-xl md:text-2xl mb-8">
-              Make your favorite brand-name foods at home with our copycat recipes
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link 
-                href="/category/chips" 
-                className="bg-white text-blue-600 hover:bg-blue-100 transition-colors px-6 py-3 rounded-full font-medium"
-              >
-                Browse Recipes
-              </Link>
-              <Link 
-                href="/brand/pringles" 
-                className="bg-transparent border-2 border-white hover:bg-white/10 transition-colors px-6 py-3 rounded-full font-medium"
-              >
-                Popular Brands
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Recipes */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Featured Recipes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredRecipes.map((recipe, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">
-                    <Link href={`/recipes/${recipe.slug}`} className="text-blue-600 hover:underline">
-                      {recipe.title}
-                    </Link>
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Brand: <Link href={`/brand/${recipe.brandSlug}`} className="text-blue-500 hover:underline">
-                      {recipe.brand}
-                    </Link>
-                  </p>
-                  <p className="text-gray-600 mb-4">{recipe.description}</p>
-                  <Link 
-                    href={`/recipes/${recipe.slug}`}
-                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                  >
-                    View Recipe
-                  </Link>
+    <main>
+      <h1 className="text-4xl font-bold text-center my-8">Find Your Favorite Copycat Recipes</h1>
+      
+      {/* Recipe Categories */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6 text-center">Popular Categories</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allCategories.map((category) => (
+            <Link 
+              href={`/category/${category.slug}`} 
+              key={category.slug}
+              className="block"
+            >
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300">
+                <div className="h-40 bg-gray-300 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">{category.name}</span>
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
+                  <p className="text-gray-600 text-sm line-clamp-2">{category.description}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </Link>
+          ))}
         </div>
       </section>
-
-      {/* Categories */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Browse by Category</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {allCategories.map((category, index) => (
-              <Link 
-                key={index} 
-                href={`/category/${category.slug}`}
-                className="block bg-gray-100 hover:bg-gray-200 transition-colors p-6 rounded-lg text-center"
-              >
-                <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
-                <p className="text-gray-600">{category.description}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Brands */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Popular Brands</h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            {allBrands.map((brand, index) => (
-              <Link 
-                key={index} 
-                href={`/brand/${brand.slug}`}
-                className="block bg-white hover:bg-blue-50 transition-colors p-4 rounded-lg border border-gray-200 min-w-[150px] text-center"
-              >
-                <h3 className="text-lg font-semibold">{brand.name}</h3>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="py-12 bg-blue-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">About KnockoffKitchen</h2>
-          <p className="text-lg mb-6">
-            KnockoffKitchen is your source for recreating famous brand-name foods at home. 
-            Our copycat recipes let you enjoy your favorite snacks and treats with healthier 
-            ingredients, at a fraction of the cost.
-          </p>
-          <p className="text-lg">
-            Browse our collection of recipes by brand or category, and start cooking today!
-          </p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center">
-            <p className="mb-4">© 2025 KnockoffKitchen. All rights reserved.</p>
-            <div className="flex justify-center gap-6">
-              <Link href="/" className="hover:underline">Home</Link>
-              <Link href="/category/chips" className="hover:underline">Categories</Link>
-              <Link href="/brand/pringles" className="hover:underline">Brands</Link>
+      
+      {/* Featured Recipes */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6 text-center">Featured Recipes</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {featuredRecipes.map((recipe, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="h-40 bg-gray-200 flex items-center justify-center">
+                <span className="text-xl font-bold text-gray-500">{recipe.title}</span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">
+                  <Link href={`/recipes/${recipe.slug}`} className="text-red-600 hover:underline">
+                    {recipe.title}
+                  </Link>
+                </h3>
+                <p className="text-sm text-gray-500 mb-2">
+                  Brand: <Link href={`/brand/${recipe.brandSlug}`} className="text-red-500 hover:underline">
+                    {recipe.brand}
+                  </Link>
+                </p>
+                <p className="text-gray-600 mb-4 line-clamp-2">{recipe.description}</p>
+                <Link 
+                  href={`/recipes/${recipe.slug}`}
+                  className="inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                >
+                  View Recipe
+                </Link>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-      </footer>
-    </div>
+      </section>
+      
+      {/* Popular Brands */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6 text-center">Popular Brands</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {allBrands.map((brand, index) => (
+            <Link 
+              key={index} 
+              href={`/brand/${brand.slug}`}
+              className="block bg-white hover:bg-gray-50 transition-colors p-4 rounded-lg border border-gray-200 text-center"
+            >
+              <h3 className="text-lg font-semibold">{brand.name}</h3>
+            </Link>
+          ))}
+        </div>
+      </section>
+      
+      {/* About Section */}
+      <section className="bg-red-600 text-white p-8 rounded-lg mb-12">
+        <h2 className="text-2xl font-bold mb-4">About KnockoffKitchen</h2>
+        <p className="mb-4">
+          KnockoffKitchen is your source for recreating famous brand-name foods at home. 
+          Our copycat recipes let you enjoy your favorite snacks and treats with healthier 
+          ingredients, at a fraction of the cost.
+        </p>
+        <p>
+          Browse our collection of recipes by brand or category, and start cooking today!
+        </p>
+      </section>
+    </main>
   );
 }
 
