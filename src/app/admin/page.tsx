@@ -181,12 +181,20 @@ export default function AdminPage() {
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold font-serif">CSV Upload Tool</h1>
-        <Link 
-          href="/"
-          className="text-indigo-600 hover:text-indigo-800 transition-colors"
-        >
-          ← Back to Home
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link 
+            href="/admin/test"
+            className="text-purple-600 hover:text-purple-800 transition-colors"
+          >
+            CSV Test Tool
+          </Link>
+          <Link 
+            href="/"
+            className="text-indigo-600 hover:text-indigo-800 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
