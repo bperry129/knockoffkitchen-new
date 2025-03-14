@@ -11,11 +11,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Use trailing slash for consistent path handling
   trailingSlash: true,
-  // Make sure CSS is properly included in the build
-  optimizeFonts: false,
-  // Ensure assets are referenced correctly
-  assetPrefix: '',
+  // Set assetPrefix to relative path for better compatibility with Netlify
+  assetPrefix: './',
+  // No basePath for simplicity
   basePath: '',
 };
 
