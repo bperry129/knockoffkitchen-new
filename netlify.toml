@@ -1,6 +1,7 @@
 # Netlify configuration for Next.js 14 static export
 [build]
-  command = "npm install && npm run build"
+  # Use a more specific build command to ensure CSS is properly included
+  command = "npm ci && npm run build && cp -r .next/static out/_next/static"
   publish = "out"
 
 # Handle client-side routing for Next.js
