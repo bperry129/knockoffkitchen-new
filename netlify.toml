@@ -5,7 +5,14 @@
   publish = "out"
 
 # Handle client-side routing for Next.js
-# First, try to serve the requested path if it exists
+# Specific redirect for the new recipe
+[[redirects]]
+  from = "/recipes/homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe"
+  to = "/recipes/homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe/index.html"
+  status = 200
+  force = true
+
+# For all other paths, try to serve the requested path if it exists
 [[redirects]]
   from = "/*"
   to = "/:splat"
