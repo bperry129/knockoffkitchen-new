@@ -10,12 +10,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.alias['tailwindcss'] = require.resolve('tailwindcss');
-    }
-    return config;
-  },
+  trailingSlash: true,
+  // Remove the webpack configuration that might be causing issues
 };
 
 module.exports = nextConfig;
