@@ -12,7 +12,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   trailingSlash: true,
-  // Remove assetPrefix as it might be causing path issues
+  // Make sure CSS is properly included in the build
+  optimizeFonts: false,
+  // Ensure assets are referenced correctly
+  assetPrefix: '',
   basePath: '',
 };
 
