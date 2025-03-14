@@ -29,8 +29,16 @@ export default function AdminPage() {
   // Handle password submission
   const handlePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Password submitted:", password, "Expected:", ADMIN_PASSWORD);
+    
+    // Force re-render by setting state even if it's the same value
     if (password === ADMIN_PASSWORD) {
+      console.log("Password is correct, authenticating...");
       setIsAuthenticated(true);
+      // Add a small delay to ensure state update is processed
+      setTimeout(() => {
+        console.log("Authentication state:", isAuthenticated);
+      }, 100);
     } else {
       alert("Incorrect password");
     }

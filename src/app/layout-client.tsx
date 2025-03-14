@@ -144,18 +144,6 @@ export default function RootLayoutClient({
               <i className="fas fa-trademark"></i>
               <span>Lay's</span>
             </Link>
-            <Link 
-              href="/generate" 
-              className="whitespace-nowrap transition-all duration-300"
-              style={{
-                ...styles.navLink,
-                background: 'rgba(230, 57, 70, 0.1)',
-                color: '#e63946',
-              }}
-            >
-              <i className="fas fa-magic"></i>
-              <span>Generate Recipe</span>
-            </Link>
           </div>
         </nav>
 
@@ -207,12 +195,6 @@ export default function RootLayoutClient({
                       <Link href="/brand/pringles" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
                         <i className="fas fa-chevron-right text-xs"></i>
                         <span>Brands</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/generate" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
-                        <i className="fas fa-chevron-right text-xs"></i>
-                        <span>Generate Recipe</span>
                       </Link>
                     </li>
                   </ul>
