@@ -5,18 +5,18 @@
   publish = "out"
 
 # Handle client-side routing for Next.js
+# First, try to serve the requested path if it exists
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200
+
+# For paths that don't exist as static files, serve the index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
-
-# Specific redirect for recipe pages
-[[redirects]]
-  from = "/recipes/*"
-  to = "/recipes/[slug]/index.html"
-  status = 200
-  force = true
+  force = false
 
 # Add headers for CSS files to ensure proper loading
 [[headers]]
