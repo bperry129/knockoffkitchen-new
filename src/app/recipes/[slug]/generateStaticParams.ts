@@ -8,6 +8,8 @@ export async function generateStaticParams() {
     { slug: 'homemade-pringles-original' },
     { slug: 'homemade-oreo-cookies' },
     { slug: 'homemade-heinz-ketchup' },
-    { slug: 'homemade-lays-potato-chips' }
+    { slug: 'homemade-lays-potato-chips' },
+    // Add the new recipe slug
+    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe' }
   ];
 }
