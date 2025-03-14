@@ -2,63 +2,69 @@ import Link from 'next/link';
 import { getAllRecipes, getAllCategories, getAllBrands } from '../lib/api';
 import { useState } from 'react';
 
-// Custom styles for gradients and premium look
+// Custom styles for elegant and premium look
 const styles = {
-  heroGradient: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: '1rem',
-    boxShadow: '0 10px 25px rgba(102, 126, 234, 0.25)',
+  heroSection: {
+    background: '#1a1a2e',
+    borderRadius: '0.5rem',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
   },
   categoryCard: {
     transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    borderRadius: '0.5rem',
+    overflow: 'hidden',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
   },
   categoryCardHover: {
-    transform: 'translateY(-15px)',
+    transform: 'translateY(-10px)',
     boxShadow: '0 15px 30px rgba(0, 0, 0, 0.1)',
   },
-  categoryGradients: [
-    'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)',
-    'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
-    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-    'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)',
-    'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
-    'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)',
+  categoryColors: [
+    { bg: '#f8f9fa', accent: '#e63946', icon: '#e63946' },
+    { bg: '#f8f9fa', accent: '#457b9d', icon: '#457b9d' },
+    { bg: '#f8f9fa', accent: '#2a9d8f', icon: '#2a9d8f' },
+    { bg: '#f8f9fa', accent: '#e9c46a', icon: '#e9c46a' },
+    { bg: '#f8f9fa', accent: '#6d597a', icon: '#6d597a' },
+    { bg: '#f8f9fa', accent: '#3a86ff', icon: '#3a86ff' },
   ],
   recipeCard: {
     transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-    borderRadius: '1rem',
+    borderRadius: '0.5rem',
     overflow: 'hidden',
-    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.05)',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
   },
   recipeCardHover: {
-    transform: 'scale(1.05)',
-    boxShadow: '0 20px 30px rgba(0, 0, 0, 0.1)',
+    transform: 'translateY(-10px)',
+    boxShadow: '0 15px 30px rgba(0, 0, 0, 0.1)',
   },
-  recipeImageGradients: [
-    'linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)',
-    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    'linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%)',
+  recipeImageColors: [
+    { bg: '#e63946', text: '#ffffff' },
+    { bg: '#457b9d', text: '#ffffff' },
+    { bg: '#2a9d8f', text: '#ffffff' },
   ],
   brandCard: {
     transition: 'all 0.3s ease',
-    background: 'rgba(255, 255, 255, 0.8)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    boxShadow: '0 8px 15px rgba(0, 0, 0, 0.05)',
+    background: '#ffffff',
+    borderRadius: '0.5rem',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)',
   },
   brandCardHover: {
-    transform: 'translateY(-5px) scale(1.03)',
-    boxShadow: '0 15px 25px rgba(0, 0, 0, 0.1)',
+    transform: 'translateY(-5px)',
+    boxShadow: '0 15px 25px rgba(0, 0, 0, 0.08)',
   },
-  aboutGradient: {
-    background: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)',
-    borderRadius: '1rem',
-    boxShadow: '0 15px 30px rgba(255, 65, 108, 0.2)',
+  aboutSection: {
+    background: '#1a1a2e',
+    borderRadius: '0.5rem',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
   },
   sectionHeading: {
     position: 'relative',
     display: 'inline-block',
     marginBottom: '2rem',
+    fontFamily: 'var(--font-playfair)',
   },
   sectionHeadingAfter: {
     content: '""',
@@ -66,19 +72,37 @@ const styles = {
     bottom: '-10px',
     left: '50%',
     transform: 'translateX(-50%)',
-    width: '80px',
-    height: '4px',
-    background: 'linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%)',
-    borderRadius: '2px',
+    width: '50px',
+    height: '2px',
+    background: '#e63946',
   },
-  viewButton: {
-    background: 'linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%)',
-    boxShadow: '0 4px 15px rgba(255, 65, 108, 0.3)',
+  accentButton: {
+    background: '#e63946',
+    color: 'white',
+    boxShadow: '0 4px 15px rgba(230, 57, 70, 0.2)',
     transition: 'all 0.3s ease',
+    borderRadius: '0.25rem',
   },
-  viewButtonHover: {
+  accentButtonHover: {
     transform: 'translateY(-2px)',
-    boxShadow: '0 8px 20px rgba(255, 65, 108, 0.4)',
+    boxShadow: '0 8px 20px rgba(230, 57, 70, 0.3)',
+  },
+  secondaryButton: {
+    background: 'transparent',
+    color: '#e63946',
+    border: '1px solid #e63946',
+    transition: 'all 0.3s ease',
+    borderRadius: '0.25rem',
+  },
+  secondaryButtonHover: {
+    background: 'rgba(230, 57, 70, 0.05)',
+    transform: 'translateY(-2px)',
+  },
+  newsletterSection: {
+    background: '#ffffff',
+    borderRadius: '0.5rem',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.05)',
+    border: '1px solid rgba(0, 0, 0, 0.05)',
   },
 };
 
@@ -131,7 +155,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
   return (
     <main>
       {/* Hero Section */}
-      <section style={styles.heroGradient} className="p-8 md:p-12 text-white mb-16">
+      <section style={styles.heroSection} className="p-8 md:p-12 text-white mb-16">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
             Find Your Favorite <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-yellow-200">Copycat Recipes</span>
@@ -185,10 +209,10 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
                   style={{
                     ...styles.categoryCard,
                     ...(isHovered ? styles.categoryCardHover : {}),
-                    background: styles.categoryGradients[index % styles.categoryGradients.length],
+                    background: styles.categoryColors[index % styles.categoryColors.length].bg,
                   }}
                 >
-                  <div className="h-48 flex items-center justify-center p-6 text-white">
+                  <div className="h-48 flex items-center justify-center p-6" style={{ color: styles.categoryColors[index % styles.categoryColors.length].icon }}>
                     <i className={`${iconClass} text-6xl mb-4 transform transition-transform duration-300 ${isHovered ? 'scale-110 rotate-6' : ''}`}></i>
                   </div>
                   <div className="p-6 bg-white">
@@ -236,7 +260,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
                 <div 
                   className="h-48 flex items-center justify-center relative overflow-hidden"
                   style={{
-                    background: styles.recipeImageGradients[index % styles.recipeImageGradients.length],
+                    background: styles.recipeImageColors[index % styles.recipeImageColors.length].bg,
                   }}
                 >
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -278,8 +302,8 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
                       href={`/recipes/${recipe.slug}`}
                       className="text-white px-4 py-2 rounded-lg flex items-center gap-2"
                       style={{
-                        ...styles.viewButton,
-                        ...(isHovered ? styles.viewButtonHover : {})
+                        ...styles.accentButton,
+                        ...(isHovered ? styles.accentButtonHover : {})
                       }}
                     >
                       <span>View</span>
@@ -295,11 +319,11 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
           <Link 
             href="/recipes" 
             className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white"
-            style={styles.viewButton}
-            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.viewButtonHover)}
+            style={styles.accentButton}
+            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.accentButtonHover)}
             onMouseOut={(e) => {
               e.currentTarget.style.transform = '';
-              e.currentTarget.style.boxShadow = styles.viewButton.boxShadow;
+              e.currentTarget.style.boxShadow = styles.accentButton.boxShadow;
             }}
           >
             View All Recipes <i className="fas fa-arrow-right ml-2"></i>
@@ -341,7 +365,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
       </section>
       
       {/* About Section */}
-      <section style={styles.aboutGradient} className="text-white p-8 md:p-12 mb-16">
+      <section style={styles.aboutSection} className="text-white p-8 md:p-12 mb-16">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center mb-6">
             <div className="w-16 h-16 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-4">
@@ -403,11 +427,11 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
             />
             <button 
               className="px-6 py-3 rounded-full text-white font-medium flex items-center justify-center gap-2"
-              style={styles.viewButton}
-              onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.viewButtonHover)}
+              style={styles.accentButton}
+              onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.accentButtonHover)}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = '';
-                e.currentTarget.style.boxShadow = styles.viewButton.boxShadow;
+                e.currentTarget.style.boxShadow = styles.accentButton.boxShadow;
               }}
             >
               <span>Subscribe</span>

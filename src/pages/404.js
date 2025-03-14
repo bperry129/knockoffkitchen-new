@@ -1,21 +1,23 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-// Custom styles for gradients and premium look
+// Custom styles for elegant and premium look
 const styles = {
-  errorGradient: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: '1rem',
-    boxShadow: '0 10px 25px rgba(102, 126, 234, 0.25)',
+  errorSection: {
+    background: '#1a1a2e',
+    borderRadius: '0.5rem',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
   },
-  homeButton: {
-    background: 'linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%)',
-    boxShadow: '0 4px 15px rgba(255, 65, 108, 0.3)',
+  accentButton: {
+    background: '#e63946',
+    color: 'white',
+    boxShadow: '0 4px 15px rgba(230, 57, 70, 0.2)',
     transition: 'all 0.3s ease',
+    borderRadius: '0.25rem',
   },
-  homeButtonHover: {
+  accentButtonHover: {
     transform: 'translateY(-2px)',
-    boxShadow: '0 8px 20px rgba(255, 65, 108, 0.4)',
+    boxShadow: '0 8px 20px rgba(230, 57, 70, 0.3)',
   },
 };
 
@@ -41,7 +43,7 @@ export default function Custom404() {
         </div>
         
         <div className="space-y-6">
-          <div style={styles.errorGradient} className="p-6 text-white text-left rounded-xl mb-8">
+          <div style={styles.errorSection} className="p-6 text-white text-left rounded-xl mb-8">
             <h3 className="text-xl font-bold mb-3 flex items-center">
               <i className="fas fa-lightbulb mr-2"></i>
               <span>Try one of these instead:</span>
@@ -66,8 +68,8 @@ export default function Custom404() {
             href="/" 
             className="inline-flex items-center px-6 py-3 text-white rounded-full font-medium"
             style={{
-              ...styles.homeButton,
-              ...(isButtonHovered ? styles.homeButtonHover : {})
+              ...styles.accentButton,
+              ...(isButtonHovered ? styles.accentButtonHover : {})
             }}
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}

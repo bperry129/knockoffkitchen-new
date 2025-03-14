@@ -1,64 +1,75 @@
 import '../app/globals.css';
 import Link from 'next/link';
-import { Montserrat } from 'next/font/google';
+import { Playfair_Display, Montserrat } from 'next/font/google';
 import Head from 'next/head';
 
-// Use Montserrat font for a more premium look
+// Use elegant fonts for a premium look
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+  variable: '--font-playfair',
+});
+
 const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap",
+  variable: '--font-montserrat',
 });
 
-// Custom styles for gradients and premium look
+// Custom styles for elegant and premium look
 const styles = {
   gradientBg: {
-    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+    background: '#f8f9fa',
   },
-  headerGradient: {
-    background: 'linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%)',
-    boxShadow: '0 4px 20px rgba(255, 65, 108, 0.2)',
+  headerStyle: {
+    background: '#1a1a2e',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
   },
-  navGradient: {
-    background: 'linear-gradient(90deg, #4776E6 0%, #8E54E9 100%)',
-    boxShadow: '0 4px 15px rgba(71, 118, 230, 0.2)',
+  navStyle: {
+    background: 'white',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
   },
-  footerGradient: {
-    background: 'linear-gradient(90deg, #141e30 0%, #243b55 100%)',
+  footerStyle: {
+    background: '#1a1a2e',
   },
   searchBox: {
-    background: 'rgba(255, 255, 255, 0.2)',
+    background: 'rgba(255, 255, 255, 0.1)',
     backdropFilter: 'blur(5px)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
   },
   navLink: {
     transition: 'all 0.3s ease',
-    padding: '0.5rem 1rem',
-    borderRadius: '0.5rem',
+    padding: '0.75rem 1.25rem',
+    borderRadius: '0.25rem',
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
+    color: '#4a4a68',
+    fontWeight: 500,
   },
   navLinkHover: {
-    background: 'rgba(255, 255, 255, 0.2)',
+    color: '#e63946',
     transform: 'translateY(-2px)',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
   },
+  accentColor: '#e63946', // Elegant red
+  accentGradient: 'linear-gradient(135deg, #e63946 0%, #f1596a 100%)',
+  goldAccent: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
 };
 
 // This default export is required in a new `pages/_app.js` file.
 export default function MyApp({ Component, pageProps }) {
   return (
-    <div className={`${montserrat.className} antialiased min-h-screen`} style={styles.gradientBg}>
+    <div className={`${playfair.variable} ${montserrat.variable} font-sans antialiased min-h-screen`} style={styles.gradientBg}>
       <Head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
       </Head>
       
-      <header style={styles.headerGradient} className="py-4 text-white">
+      <header style={styles.headerStyle} className="py-5 text-white">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-          <Link href="/" className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
-            <i className="fas fa-utensils"></i>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-yellow-200">
+          <Link href="/" className="text-3xl font-serif tracking-tight flex items-center gap-2">
+            <i className="fas fa-utensils text-white"></i>
+            <span className="font-bold">
               KnockoffKitchen
             </span>
           </Link>
@@ -72,84 +83,105 @@ export default function MyApp({ Component, pageProps }) {
               />
               <i className="fas fa-search absolute left-3 top-3 text-white"></i>
             </div>
-            <button className="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition duration-300">
+            <button className="bg-white bg-opacity-10 hover:bg-opacity-20 p-2 rounded-full transition duration-300">
               <i className="fas fa-bell text-white"></i>
             </button>
           </div>
-          <button className="md:hidden bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition duration-300">
+          <button className="md:hidden bg-white bg-opacity-10 hover:bg-opacity-20 p-2 rounded-full transition duration-300">
             <i className="fas fa-bars text-white"></i>
           </button>
         </div>
       </header>
       
-      <nav style={styles.navGradient} className="py-3 text-white sticky top-0 z-10">
+      <nav style={styles.navStyle} className="py-3 sticky top-0 z-10 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 flex space-x-2 overflow-x-auto">
           <Link 
             href="/" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-home"></i>
             <span>Home</span>
           </Link>
           <Link 
             href="/category/chips" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-cookie-bite"></i>
             <span>Chips</span>
           </Link>
           <Link 
             href="/category/cookies" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-cookie"></i>
             <span>Cookies</span>
           </Link>
           <Link 
             href="/category/sauces" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-wine-bottle"></i>
             <span>Sauces</span>
           </Link>
           <Link 
             href="/brand/pringles" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-trademark"></i>
             <span>Pringles</span>
           </Link>
           <Link 
             href="/brand/doritos" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-trademark"></i>
             <span>Doritos</span>
           </Link>
           <Link 
             href="/brand/lays" 
-            className="text-white whitespace-nowrap hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+            className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => e.currentTarget.style.transform = ''}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
           >
             <i className="fas fa-trademark"></i>
             <span>Lay's</span>
@@ -161,34 +193,34 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </main>
 
-      <footer style={styles.footerGradient} className="text-white py-10 mt-10">
+      <footer style={styles.footerStyle} className="text-white py-12 mt-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-8 md:mb-0 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                 <i className="fas fa-utensils text-2xl"></i>
-                <h3 className="text-2xl font-bold">KnockoffKitchen</h3>
+                <h3 className="text-2xl font-serif font-bold">KnockoffKitchen</h3>
               </div>
               <p className="text-gray-300 max-w-md">Make your favorite brand-name foods at home with our premium copycat recipes.</p>
-              <div className="flex gap-4 mt-4 justify-center md:justify-start">
-                <a href="#" className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition duration-300">
+              <div className="flex gap-4 mt-6 justify-center md:justify-start">
+                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
                   <i className="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition duration-300">
+                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
                   <i className="fab fa-twitter"></i>
                 </a>
-                <a href="#" className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition duration-300">
+                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
                   <i className="fab fa-instagram"></i>
                 </a>
-                <a href="#" className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition duration-300">
+                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
                   <i className="fab fa-pinterest"></i>
                 </a>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8 text-center md:text-left">
+            <div className="grid grid-cols-2 gap-12 text-center md:text-left">
               <div>
                 <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   <li>
                     <Link href="/" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
                       <i className="fas fa-chevron-right text-xs"></i>
@@ -211,7 +243,7 @@ export default function MyApp({ Component, pageProps }) {
               </div>
               <div>
                 <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   <li className="flex items-center gap-2 justify-center md:justify-start">
                     <i className="fas fa-envelope"></i>
                     <span>info@knockoffkitchen.com</span>
@@ -228,7 +260,7 @@ export default function MyApp({ Component, pageProps }) {
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
+          <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
             <p>© {new Date().getFullYear()} KnockoffKitchen. All rights reserved.</p>
           </div>
         </div>
