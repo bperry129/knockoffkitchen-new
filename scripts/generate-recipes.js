@@ -2,6 +2,8 @@
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, getDocs, query, where, addDoc, serverTimestamp, updateDoc, doc } = require('firebase/firestore');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 // Firebase configuration
 const firebaseConfig = {
@@ -254,18 +256,25 @@ Format the response as a JSON object with the following structure:
 // Function to save recipe to Firestore
 async function saveRecipeToFirestore(recipe, productName, brandName) {
   try {
+    // Generate slug from recipe title
+    const slug = generateSlug(recipe.title);
+    
     // Add metadata for database storage
     const recipeWithMetadata = {
       ...recipe,
       productName,
       brandName,
       createdAt: serverTimestamp(),
-      slug: generateSlug(recipe.title),
+      slug,
     };
 
     // Save recipe to Firestore
     const docRef = await addDoc(collection(db, "recipes"), recipeWithMetadata);
     console.log(`Recipe saved to Firestore with ID: ${docRef.id}`);
+    
+    // Update the generateStaticParams.ts file with the new slug
+    updateStaticParams(slug);
+    
     return docRef.id;
   } catch (error) {
     console.error('Error saving recipe to Firestore:', error);
@@ -284,6 +293,46 @@ async function updateProductStatus(productId, recipeId) {
     console.log(`Product ${productId} status updated to 'completed'`);
   } catch (error) {
     console.error(`Error updating product ${productId} status:`, error);
+  }
+}
+
+// Function to update the generateStaticParams.ts file with the new recipe slug
+function updateStaticParams(slug) {
+  try {
+    const staticParamsPath = path.join(__dirname, '..', 'src', 'app', 'recipes', '[slug]', 'generateStaticParams.ts');
+    
+    // Read the current file
+    let content = fs.readFileSync(staticParamsPath, 'utf8');
+    
+    // Check if the slug is already in the file
+    if (content.includes(`{ slug: '${slug}' }`)) {
+      console.log(`Slug '${slug}' already exists in generateStaticParams.ts`);
+      return;
+    }
+    
+    // Find the array of slugs
+    const arrayStartIndex = content.indexOf('return [');
+    const arrayEndIndex = content.indexOf('];', arrayStartIndex);
+    
+    if (arrayStartIndex === -1 || arrayEndIndex === -1) {
+      throw new Error('Could not find the array of slugs in generateStaticParams.ts');
+    }
+    
+    // Extract the array content
+    const arrayContent = content.substring(arrayStartIndex + 8, arrayEndIndex);
+    
+    // Add the new slug to the array
+    const newArrayContent = arrayContent.trim() + `,\n    { slug: '${slug}' }`;
+    
+    // Replace the array content in the file
+    const newContent = content.substring(0, arrayStartIndex + 8) + newArrayContent + content.substring(arrayEndIndex);
+    
+    // Write the updated content back to the file
+    fs.writeFileSync(staticParamsPath, newContent, 'utf8');
+    
+    console.log(`Added slug '${slug}' to generateStaticParams.ts`);
+  } catch (error) {
+    console.error('Error updating generateStaticParams.ts:', error);
   }
 }
 
@@ -333,10 +382,38 @@ async function processPendingProducts() {
   }
 }
 
+// Function to run the auto-deploy script
+async function runAutoDeploy() {
+  try {
+    console.log('Running auto-deploy script...');
+    const { fork } = require('child_process');
+    
+    return new Promise((resolve, reject) => {
+      const autoDeployProcess = fork(path.join(__dirname, 'auto-deploy.js'));
+      
+      autoDeployProcess.on('exit', (code) => {
+        if (code === 0) {
+          console.log('Auto-deploy completed successfully.');
+          resolve();
+        } else {
+          console.error(`Auto-deploy failed with code ${code}.`);
+          reject(new Error(`Auto-deploy failed with code ${code}`));
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Error running auto-deploy script:', error);
+  }
+}
+
 // Main function
 async function main() {
   try {
+    // Process pending products
     await processPendingProducts();
+    
+    // Run auto-deploy to push changes to GitHub
+    await runAutoDeploy();
   } catch (error) {
     console.error('Unhandled error:', error);
   } finally {
