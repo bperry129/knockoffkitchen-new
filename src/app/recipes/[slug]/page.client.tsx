@@ -201,11 +201,25 @@ export default function RecipeDetailClientPage(props: PageProps) {
   const [measurementSystem, setMeasurementSystem] = useState<'us' | 'metric'>('us');
 
   useEffect(() => {
+    // Skip data fetching during static site generation
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+
+    // Use a timeout to prevent long-running operations
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError('Request timed out. Using fallback data.');
+    }, 5000); // 5 second timeout
+
     async function fetchRecipe() {
       try {
-        setLoading(true);
         const recipesQuery = query(collection(db, "recipes"), where("slug", "==", slug));
         const recipesSnapshot = await getDocs(recipesQuery);
+        
+        // Clear the timeout since we got a response
+        clearTimeout(timeoutId);
         
         if (recipesSnapshot.empty) {
           setError('Recipe not found');
@@ -221,8 +235,11 @@ export default function RecipeDetailClientPage(props: PageProps) {
         setRecipe(recipeData);
         setLoading(false);
       } catch (err) {
+        // Clear the timeout since we got a response
+        clearTimeout(timeoutId);
+        
         console.error('Error fetching recipe:', err);
-        setError('Failed to load recipe. Please try again later.');
+        setError('Failed to load recipe. Using fallback data.');
         setLoading(false);
       }
     }
@@ -230,6 +247,9 @@ export default function RecipeDetailClientPage(props: PageProps) {
     if (slug) {
       fetchRecipe();
     }
+
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
   }, [slug]);
 
   // Tab navigation component

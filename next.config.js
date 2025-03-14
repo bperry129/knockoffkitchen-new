@@ -20,6 +20,22 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
   // Disable font optimization to avoid issues with static export
   optimizeFonts: false,
+  // Increase static generation timeout (default is 60 seconds)
+  staticPageGenerationTimeout: 180, // 3 minutes
+  // Optimize build performance
+  swcMinify: true,
+  // Reduce the impact of large pages
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Experimental features to improve performance
+  experimental: {
+    // Optimize CSS
+    optimizeCss: true,
+    // Improve memory usage
+    memoryBasedWorkersCount: true,
+  },
 };
 
 module.exports = nextConfig;
