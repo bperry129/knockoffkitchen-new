@@ -84,7 +84,7 @@ export default async function BrandPage({ params }: { params: { slug: string } }
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<any> {
   const brandData = await getBrandData(params.slug);
   
   if (!brandData) {
