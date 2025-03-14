@@ -20,11 +20,6 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
   // Disable font optimization to avoid issues with static export
   optimizeFonts: false,
-  // Experimental features
-  experimental: {
-    // Enable app directory
-    appDir: true,
-  },
 };
 
 module.exports = nextConfig;
