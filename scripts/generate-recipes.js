@@ -218,7 +218,19 @@ Format the response as a JSON object with the following structure:
     console.log('Response content:', content);
     
     // Extract the recipe JSON from the response
-    const recipe = JSON.parse(content);
+    // Handle case where the API returns a markdown code block
+    let jsonContent = content;
+    if (content.startsWith('```json')) {
+      jsonContent = content.replace(/```json\n|\n```/g, '');
+    }
+    
+    // Fix any missing commas in the JSON
+    jsonContent = jsonContent.replace(/"\n\s+"/g, '",\n  "');
+    jsonContent = jsonContent.replace(/}\n\s+{/g, '},\n  {');
+    
+    console.log('Cleaned JSON content:', jsonContent);
+    
+    const recipe = JSON.parse(jsonContent);
     console.log(`Recipe generated: ${recipe.title}`);
     
     return recipe;
