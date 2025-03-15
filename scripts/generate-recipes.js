@@ -311,44 +311,11 @@ async function updateProductStatus(productId, recipeId) {
   }
 }
 
-// Function to update the generateStaticParams.ts file with the new recipe slug
+// Function to log the new recipe slug (no longer updating generateStaticParams.ts)
 function updateStaticParams(slug) {
-  try {
-    const staticParamsPath = path.join(__dirname, '..', 'src', 'app', 'recipes', '[slug]', 'generateStaticParams.ts');
-    
-    // Read the current file
-    let content = fs.readFileSync(staticParamsPath, 'utf8');
-    
-    // Check if the slug is already in the file
-    if (content.includes(`{ slug: '${slug}' }`)) {
-      console.log(`Slug '${slug}' already exists in generateStaticParams.ts`);
-      return;
-    }
-    
-    // Find the array of slugs
-    const arrayStartIndex = content.indexOf('return [');
-    const arrayEndIndex = content.indexOf('];', arrayStartIndex);
-    
-    if (arrayStartIndex === -1 || arrayEndIndex === -1) {
-      throw new Error('Could not find the array of slugs in generateStaticParams.ts');
-    }
-    
-    // Extract the array content
-    const arrayContent = content.substring(arrayStartIndex + 8, arrayEndIndex);
-    
-    // Add the new slug to the array
-    const newArrayContent = arrayContent.trim() + `,\n    { slug: '${slug}' }`;
-    
-    // Replace the array content in the file
-    const newContent = content.substring(0, arrayStartIndex + 8) + newArrayContent + content.substring(arrayEndIndex);
-    
-    // Write the updated content back to the file
-    fs.writeFileSync(staticParamsPath, newContent, 'utf8');
-    
-    console.log(`Added slug '${slug}' to generateStaticParams.ts`);
-  } catch (error) {
-    console.error('Error updating generateStaticParams.ts:', error);
-  }
+  // We're no longer updating the generateStaticParams.ts file
+  // Instead, we're using Netlify redirects to handle dynamic routes
+  console.log(`Generated new recipe with slug: ${slug}`);
 }
 
 // Main function to process pending products

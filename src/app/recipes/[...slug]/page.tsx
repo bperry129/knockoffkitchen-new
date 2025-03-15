@@ -29,14 +29,13 @@ export default function RecipeCatchAllPage({ params }: { params: { slug: string[
   );
 }
 
-// Generate a few static paths for the most common recipes
+// This is a catch-all fallback for all recipe slugs
+// We'll use Netlify redirects to handle dynamic routes
 export function generateStaticParams() {
+  // Return a minimal set of static paths for initial build
+  // The rest will be handled by client-side rendering and Netlify redirects
   return [
-    { slug: ['homemade-doritos-nacho-cheese'] },
-    { slug: ['homemade-pringles-original'] },
-    { slug: ['homemade-oreo-cookies'] },
-    { slug: ['homemade-heinz-ketchup'] },
-    { slug: ['homemade-lays-potato-chips'] },
-    { slug: ['homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe'] }
+    { slug: ['index'] }, // For the recipes index page
+    { slug: ['placeholder'] } // A placeholder for all other recipes
   ];
 }

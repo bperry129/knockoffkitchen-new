@@ -1,16 +1,10 @@
 // This function is needed for static site generation with dynamic routes
-// For static export, we'll use a simple hardcoded approach
+// For static export, we'll use a minimal approach and rely on client-side rendering
 export async function generateStaticParams() {
-  // For static export, we'll return a few placeholder slugs
-  // The actual content will be loaded client-side from Firebase
-  return [{ slug: 'homemade-doritos-nacho-cheese' },
-    { slug: 'homemade-pringles-original' },
-    { slug: 'homemade-oreo-cookies' },
-    { slug: 'homemade-heinz-ketchup' },
-    { slug: 'homemade-lays-potato-chips' },
-    // Add the new recipe slug
-    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe' },
-    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-bold-flavor' },
-    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-and-cheesy' },
-    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-cheesy-snack' }];
+  // Return a minimal set of static paths for initial build
+  // The rest will be handled by client-side rendering and Netlify redirects
+  return [
+    { slug: 'index' }, // For the recipes index page
+    { slug: 'placeholder' } // A placeholder for all other recipes
+  ];
 }
