@@ -4,6 +4,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getBrandBySlug, getRecipesByBrand } from '@/lib/api';
 
+// This function is needed for static site generation with dynamic routes
+export async function generateStaticParams() {
+  // Return a minimal set of static paths for initial build
+  // The rest will be handled by client-side rendering and Netlify redirects
+  return [
+    { slug: 'index' } // For the brands index page
+  ];
+}
+
 export default async function BrandPage({ params }: { params: { slug: string } }) {
   const brand = await getBrandBySlug(params.slug);
   
