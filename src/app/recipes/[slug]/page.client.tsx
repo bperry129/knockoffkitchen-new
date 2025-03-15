@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { useParams } from 'next/navigation';
+import RecipeStructuredData from '../../../components/RecipeStructuredData';
+import SeoHead from '../../../components/SeoHead';
+import OptimizedImage from '../../../components/OptimizedImage';
 
 // Fallback data for static site generation
 const fallbackRecipeData = {
@@ -206,6 +208,10 @@ export default function RecipeDetailClientPage(props: PageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [measurementSystem, setMeasurementSystem] = useState<'us' | 'metric'>('us');
+  
+  // Use fallback data if no recipe is found or there's an error
+  // This ensures the page works for static site generation
+  const recipeData = recipe || fallbackRecipeData;
 
   useEffect(() => {
     // Skip data fetching during static site generation
@@ -296,8 +302,24 @@ export default function RecipeDetailClientPage(props: PageProps) {
   );
 
   if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto py-8 px-4">
+  return (
+    <div className="max-w-4xl mx-auto py-8 px-4">
+      {/* Add SEO metadata and structured data */}
+      <SeoHead 
+        title={recipeData.title}
+        description={recipeData.introduction}
+        imageUrl={recipeData.imageUrl}
+        url={`https://knockoffkitchen-new.netlify.app/recipes/${recipeData.slug}`}
+        type="article"
+        keywords={[
+          'copycat recipe', 
+          recipeData.productName, 
+          recipeData.brandName, 
+          'homemade', 
+          recipeData.category
+        ]}
+      />
+      <RecipeStructuredData recipe={recipeData} />
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
         </div>
@@ -305,16 +327,29 @@ export default function RecipeDetailClientPage(props: PageProps) {
     );
   }
 
-  // Use fallback data if no recipe is found or there's an error
-  // This ensures the page works for static site generation
-  const recipeData = recipe || fallbackRecipeData;
-  
   // Log the recipe data for debugging
   console.log('Using recipe data:', recipeData);
   console.log('Image URL from recipe data:', recipeData.imageUrl);
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
+      {/* Add SEO metadata and structured data */}
+      <SeoHead 
+        title={recipeData.title}
+        description={recipeData.introduction}
+        imageUrl={recipeData.imageUrl}
+        url={`https://knockoffkitchen-new.netlify.app/recipes/${recipeData.slug}`}
+        type="article"
+        keywords={[
+          'copycat recipe', 
+          recipeData.productName, 
+          recipeData.brandName, 
+          'homemade', 
+          recipeData.category
+        ]}
+      />
+      <RecipeStructuredData recipe={recipeData} />
+      
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-gradient-to-r from-indigo-900 to-indigo-600 px-6 py-4">
           <h1 className="text-2xl font-bold text-white">{recipeData.title}</h1>
@@ -345,18 +380,20 @@ export default function RecipeDetailClientPage(props: PageProps) {
             {/* Image - Right */}
             <div className="md:w-2/3">
               <div className="relative w-full h-64 rounded-lg overflow-hidden">
-                <img 
+                <OptimizedImage 
                   src={
                     // Force the correct image URL for specific slugs
                     slug.includes('doritos-nacho-cheese-tortilla-chips') 
                       ? "https://assets.syndigo.cloud/cdn/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7/fileType_jpg;size_600x600/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7" 
                       : (recipeData.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image")
                   } 
-                  alt={`Homemade ${recipeData.productName} recipe`}
-                  className="object-cover w-full h-full"
-                  onError={(e) => {
-                    console.error('Image failed to load:', e.currentTarget.src);
-                    e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image";
+                  alt={`Homemade ${recipeData.productName} recipe - A copycat version that tastes just like the original`}
+                  width={600}
+                  height={400}
+                  className="rounded-lg"
+                  priority={true}
+                  onError={() => {
+                    console.error('Image failed to load:', recipeData.imageUrl);
                   }}
                 />
               </div>

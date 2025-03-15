@@ -1,7 +1,7 @@
 # Netlify configuration for Next.js 14 static export
 [build]
-  # Use the standard build command
-  command = "npm ci && npm run build"
+  # Use the standard build command with sitemap generation
+  command = "npm ci && npm run build && node scripts/generate-sitemap.js"
   publish = "out"
 
 # Specific redirect for recipes index page
