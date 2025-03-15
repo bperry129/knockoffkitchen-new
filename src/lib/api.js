@@ -201,7 +201,8 @@ export async function getBrandBySlug(slug) {
     const brandDoc = await getDoc(brandRef);
     
     if (brandDoc.exists()) {
-      return brandDoc.data();
+      // Serialize the brand data to ensure JSON compatibility
+      return serializeBrandData(brandDoc.data());
     }
     
     // If not found in brands collection, try to extract from recipes
@@ -209,7 +210,7 @@ export async function getBrandBySlug(slug) {
     
     // Return the brand if found in recipes
     if (brands[slug]) {
-      return brands[slug];
+      return serializeBrandData(brands[slug]);
     }
     
     // If not found anywhere, create a new brand document based on the slug
@@ -221,12 +222,16 @@ export async function getBrandBySlug(slug) {
       description: `Copycat recipes for ${brandName} products.`,
       foundedYear: 'N/A',
       headquarters: 'N/A',
-      createdAt: new Date()
+      createdAt: new Date().toISOString() // Store as ISO string for JSON compatibility
     };
     
     // Save the new brand to the brands collection
     try {
-      await setDoc(doc(db, 'brands', slug), newBrand);
+      // Create a copy for Firestore that uses a Date object
+      const brandForFirestore = { ...newBrand };
+      brandForFirestore.createdAt = new Date(); // Firestore prefers Date objects
+      
+      await setDoc(doc(db, 'brands', slug), brandForFirestore);
       console.log(`Created new brand document for ${brandName} (${slug})`);
     } catch (saveError) {
       console.error(`Error saving new brand document for ${slug}:`, saveError);
@@ -243,9 +248,32 @@ export async function getBrandBySlug(slug) {
       slug: slug,
       description: `Copycat recipes for ${brandName} products.`,
       foundedYear: 'N/A',
-      headquarters: 'N/A'
+      headquarters: 'N/A',
+      createdAt: new Date().toISOString() // Ensure JSON compatibility
     };
   }
+}
+
+// Helper function to serialize brand data for JSON
+function serializeBrandData(brand) {
+  // Create a new object with all properties from the brand
+  const serializedBrand = { ...brand };
+  
+  // Convert Date objects to ISO strings
+  if (serializedBrand.createdAt) {
+    if (typeof serializedBrand.createdAt.toDate === 'function') {
+      // Firestore timestamp
+      serializedBrand.createdAt = serializedBrand.createdAt.toDate().toISOString();
+    } else if (serializedBrand.createdAt instanceof Date) {
+      // JavaScript Date object
+      serializedBrand.createdAt = serializedBrand.createdAt.toISOString();
+    } else if (typeof serializedBrand.createdAt === 'object') {
+      // Unknown object type, convert to string
+      serializedBrand.createdAt = String(serializedBrand.createdAt);
+    }
+  }
+  
+  return serializedBrand;
 }
 
 // Function to get all brands
@@ -255,7 +283,8 @@ export async function getAllBrands() {
     const brandsSnapshot = await getDocs(collection(db, 'brands'));
     
     if (!brandsSnapshot.empty) {
-      return brandsSnapshot.docs.map(doc => doc.data());
+      // Serialize each brand to ensure JSON compatibility
+      return brandsSnapshot.docs.map(doc => serializeBrandData(doc.data()));
     }
     
     // If no brands found in the brands collection, extract from recipes
@@ -263,7 +292,8 @@ export async function getAllBrands() {
     const brandsList = Object.values(brands);
     
     if (brandsList.length > 0) {
-      return brandsList;
+      // Serialize each brand to ensure JSON compatibility
+      return brandsList.map(brand => serializeBrandData(brand));
     }
     
     // If still no brands found, create them from recipes
@@ -291,12 +321,16 @@ export async function getAllBrands() {
             description: `Copycat recipes for ${recipeData.brandName} products.`,
             foundedYear: 'N/A',
             headquarters: 'N/A',
-            createdAt: new Date()
+            createdAt: new Date().toISOString() // Store as ISO string for JSON compatibility
           };
           
           // Save the brand to the brands collection
           try {
-            await setDoc(doc(db, 'brands', recipeData.brandSlug), uniqueBrands[recipeData.brandSlug]);
+            // Create a copy for Firestore that uses a Date object
+            const brandForFirestore = { ...uniqueBrands[recipeData.brandSlug] };
+            brandForFirestore.createdAt = new Date(); // Firestore prefers Date objects
+            
+            await setDoc(doc(db, 'brands', recipeData.brandSlug), brandForFirestore);
             console.log(`Created brand: ${recipeData.brandName} (${recipeData.brandSlug})`);
           } catch (error) {
             console.error(`Error creating brand ${recipeData.brandSlug}:`, error);
@@ -305,6 +339,7 @@ export async function getAllBrands() {
       }
     }
     
+    // Return serialized brands
     return Object.values(uniqueBrands);
   } catch (error) {
     console.error('Error fetching all brands:', error);
