@@ -166,7 +166,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link 
-              href="/category/chips" 
+              href="/recipes" 
               className="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-full font-medium transition duration-300 flex items-center gap-2"
             >
               <i className="fas fa-search"></i>
@@ -198,7 +198,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
             
             return (
               <Link 
-                href={`/category/${category.slug}`} 
+                href={`/categories`} 
                 key={category.slug}
                 className="block"
                 onMouseEnter={() => setHoveredCategory(category.slug)}
