@@ -4,7 +4,13 @@
   command = "npm ci && npm run build"
   publish = "out"
 
-# Specific redirect for recipe pages
+# Specific redirect for recipes index page
+[[redirects]]
+  from = "/recipes"
+  to = "/recipes/index.html"
+  status = 200
+
+# Specific redirect for recipe detail pages
 [[redirects]]
   from = "/recipes/*"
   to = "/recipes/[...slug].html"
