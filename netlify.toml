@@ -10,6 +10,12 @@
   to = "/recipes/index.html"
   status = 200
 
+# Specific redirect for the new recipe
+[[redirects]]
+  from = "/recipes/copycat-doritos-nacho-cheese-tortilla-chips-crispy-flavorful"
+  to = "/recipes/placeholder.html"
+  status = 200
+
 # Specific redirect for recipe detail pages
 [[redirects]]
   from = "/recipes/*"
