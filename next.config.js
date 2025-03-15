@@ -50,6 +50,11 @@ const nextConfig = {
         source: '/recipes/copycat-doritos-nacho-cheese-tortilla-chips-crispy-flavorful',
         destination: '/recipes/placeholder',
       },
+      // Add rewrite for brand pages
+      {
+        source: '/brand/:slug',
+        destination: '/brand/[slug]',
+      },
     ];
   },
   
