@@ -105,28 +105,12 @@ export default function RootLayoutClient({
               <span>Recipes</span>
             </Link>
             <Link 
-              href="/category/chips" 
+              href="/categories" 
               className="whitespace-nowrap transition-all duration-300"
               style={styles.navLink}
             >
-              <i className="fas fa-cookie-bite"></i>
-              <span>Chips</span>
-            </Link>
-            <Link 
-              href="/category/cookies" 
-              className="whitespace-nowrap transition-all duration-300"
-              style={styles.navLink}
-            >
-              <i className="fas fa-cookie"></i>
-              <span>Cookies</span>
-            </Link>
-            <Link 
-              href="/category/sauces" 
-              className="whitespace-nowrap transition-all duration-300"
-              style={styles.navLink}
-            >
-              <i className="fas fa-wine-bottle"></i>
-              <span>Sauces</span>
+              <i className="fas fa-tags"></i>
+              <span>Categories</span>
             </Link>
             <Link 
               href="/brand/pringles" 
@@ -200,7 +184,7 @@ export default function RootLayoutClient({
                       </Link>
                     </li>
                     <li>
-                      <Link href="/category/chips" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
+                      <Link href="/categories" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
                         <i className="fas fa-chevron-right text-xs"></i>
                         <span>Categories</span>
                       </Link>
