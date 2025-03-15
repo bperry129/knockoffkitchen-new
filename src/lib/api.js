@@ -23,6 +23,21 @@ const fallbackCategories = {
 // Helper function to convert Firestore document to recipe object
 function convertRecipeDoc(doc) {
   const data = doc.data();
+  
+  // Convert Firestore timestamp to ISO string for JSON serialization
+  let createdAtISO = '';
+  if (data.createdAt) {
+    try {
+      // Convert Firestore timestamp to ISO string
+      createdAtISO = data.createdAt.toDate().toISOString();
+    } catch (error) {
+      console.error('Error converting timestamp:', error);
+      createdAtISO = new Date().toISOString(); // Fallback to current date
+    }
+  } else {
+    createdAtISO = new Date().toISOString(); // Fallback to current date
+  }
+  
   return {
     id: doc.id,
     title: data.title || '',
@@ -33,7 +48,7 @@ function convertRecipeDoc(doc) {
     category: data.category || 'Uncategorized',
     categorySlug: data.category?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'uncategorized',
     imageUrl: data.imageUrl || '',
-    createdAt: data.createdAt?.toDate() || new Date(),
+    createdAt: createdAtISO, // Use ISO string instead of Date object
     // Add other fields as needed
   };
 }
