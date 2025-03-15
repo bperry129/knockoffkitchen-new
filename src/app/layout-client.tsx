@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React from "react";
 import SearchAutocomplete from "./components/SearchAutocomplete";
+import RecipeCounter from "./components/RecipeCounter";
 
 // Custom styles for elegant and premium look
 const styles = {
@@ -61,12 +62,17 @@ export default function RootLayoutClient({
       <body className={`${playfairVariable} ${montserratVariable} font-sans antialiased min-h-screen`} style={styles.gradientBg}>
         <header style={styles.headerStyle} className="py-5 text-white">
           <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-            <Link href="/" className="text-3xl font-serif tracking-tight flex items-center gap-2">
-              <i className="fas fa-utensils text-white"></i>
-              <span className="font-bold">
-                KnockoffKitchen
-              </span>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/" className="text-3xl font-serif tracking-tight flex items-center gap-2">
+                <i className="fas fa-utensils text-white"></i>
+                <span className="font-bold">
+                  KnockoffKitchen
+                </span>
+              </Link>
+              <div className="hidden md:block">
+                <RecipeCounter />
+              </div>
+            </div>
             <div className="hidden md:flex items-center">
               <SearchAutocomplete />
             </div>
