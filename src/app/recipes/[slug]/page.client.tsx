@@ -326,17 +326,18 @@ export default function RecipeDetailClientPage(props: PageProps) {
           <section id="recipe" className="mb-12">
             <h2 className="text-2xl font-bold mb-6 border-b pb-2">Recipe</h2>
             
-            {recipeData.imageUrl && (
-              <div className="mb-6 flex justify-center">
-                <div className="relative w-full max-w-lg h-64 rounded-lg overflow-hidden">
-                  <img 
-                    src={recipeData.imageUrl} 
-                    alt={`${recipeData.productName} by ${recipeData.brandName}`}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
+            <div className="mb-6 flex justify-center">
+              <div className="relative w-full max-w-lg h-64 rounded-lg overflow-hidden">
+                <img 
+                  src={recipeData.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image"} 
+                  alt={`Homemade ${recipeData.productName} recipe`}
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image";
+                  }}
+                />
               </div>
-            )}
+            </div>
             
             <div className="prose max-w-none mb-6">
               <p>{recipeData.introduction}</p>

@@ -169,15 +169,16 @@ export default function RecipesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredRecipes.map(recipe => (
             <div key={recipe.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              {recipe.imageUrl && (
-                <div className="relative h-48 w-full">
-                  <img 
-                    src={recipe.imageUrl} 
-                    alt={`${recipe.productName} by ${recipe.brandName}`}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              )}
+              <div className="relative h-48 w-full">
+                <img 
+                  src={recipe.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image"} 
+                  alt={`Homemade ${recipe.productName} recipe`}
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image";
+                  }}
+                />
+              </div>
               <div className="p-6">
                 <div className="flex items-center mb-2">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
