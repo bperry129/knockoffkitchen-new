@@ -214,6 +214,13 @@ export default function RecipeDetailClientPage(props: PageProps) {
       return;
     }
 
+    // If this is the placeholder page, we need to get the actual slug from the URL
+    const actualSlug = slug === 'placeholder' 
+      ? window.location.pathname.split('/recipes/')[1].replace(/\/$/, '') 
+      : slug;
+    
+    console.log('Actual slug from URL:', actualSlug);
+
     // Use a timeout to prevent long-running operations
     const timeoutId = setTimeout(() => {
       setLoading(false);
@@ -222,15 +229,15 @@ export default function RecipeDetailClientPage(props: PageProps) {
 
     async function fetchRecipe() {
       try {
-        console.log('Fetching recipe for slug:', slug);
-        const recipesQuery = query(collection(db, "recipes"), where("slug", "==", slug));
+        console.log('Fetching recipe for slug:', actualSlug);
+        const recipesQuery = query(collection(db, "recipes"), where("slug", "==", actualSlug));
         const recipesSnapshot = await getDocs(recipesQuery);
         
         // Clear the timeout since we got a response
         clearTimeout(timeoutId);
         
         if (recipesSnapshot.empty) {
-          console.error('Recipe not found for slug:', slug);
+          console.error('Recipe not found for slug:', actualSlug);
           setError('Recipe not found');
           setLoading(false);
           return;
@@ -256,7 +263,7 @@ export default function RecipeDetailClientPage(props: PageProps) {
       }
     }
     
-    if (slug) {
+    if (actualSlug) {
       fetchRecipe();
     }
 
