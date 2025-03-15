@@ -2,7 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getBrandBySlug, getRecipesByBrand, getAllBrandSlugs } from '@/lib/api';
+import { getBrandBySlug, getRecipesByBrand } from '@/lib/api';
 
 export default async function BrandPage({ params }: { params: { slug: string } }) {
   const brand = await getBrandBySlug(params.slug);
@@ -60,20 +60,6 @@ export default async function BrandPage({ params }: { params: { slug: string } }
       </div>
     </div>
   );
-}
-
-// Generate static paths for all brands
-export async function generateStaticParams() {
-  try {
-    // Get all brand slugs
-    const slugs = await getAllBrandSlugs();
-    
-    // Return the slugs for static generation
-    return slugs;
-  } catch (error) {
-    console.error('Error generating static params for brands:', error);
-    return [];
-  }
 }
 
 // Generate metadata for SEO
