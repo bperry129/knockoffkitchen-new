@@ -38,8 +38,17 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/recipes',
+        destination: '/recipes/index',
+      },
+      {
         source: '/recipes/:slug*',
         destination: '/recipes/[...slug]',
+      },
+      // Add specific rewrites for known recipes
+      {
+        source: '/recipes/copycat-doritos-nacho-cheese-tortilla-chips-crispy-flavorful',
+        destination: '/recipes/placeholder',
       },
     ];
   },
