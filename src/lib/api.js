@@ -182,9 +182,37 @@ export async function getRecipesByCategory(categorySlug) {
 export async function getBrandBySlug(slug) {
   try {
     const brands = await extractBrandsFromRecipes();
-    return brands[slug] || null;
+    
+    // Return the brand if found
+    if (brands[slug]) {
+      return brands[slug];
+    }
+    
+    // Return fallback brand if available
+    if (fallbackBrands[slug]) {
+      console.log(`Brand ${slug} not found in database, using fallback brand`);
+      return {
+        ...fallbackBrands[slug],
+        description: `Copycat recipes for ${fallbackBrands[slug].name} products.`,
+        foundedYear: 'N/A',
+        headquarters: 'N/A'
+      };
+    }
+    
+    return null;
   } catch (error) {
     console.error(`Error fetching brand with slug ${slug}:`, error);
+    
+    // Return fallback brand in case of error
+    if (fallbackBrands[slug]) {
+      return {
+        ...fallbackBrands[slug],
+        description: `Copycat recipes for ${fallbackBrands[slug].name} products.`,
+        foundedYear: 'N/A',
+        headquarters: 'N/A'
+      };
+    }
+    
     return null;
   }
 }
@@ -193,10 +221,25 @@ export async function getBrandBySlug(slug) {
 export async function getAllBrands() {
   try {
     const brands = await extractBrandsFromRecipes();
-    return Object.values(brands);
+    const brandsList = Object.values(brands);
+    
+    // If no brands found, use fallback brands
+    if (brandsList.length === 0) {
+      console.log('No brands found in database, using fallback brands');
+      return Object.values(fallbackBrands).map(brand => ({
+        ...brand,
+        description: `Copycat recipes for ${brand.name} products.`
+      }));
+    }
+    
+    return brandsList;
   } catch (error) {
     console.error('Error fetching all brands:', error);
-    return [];
+    // Return fallback brands in case of error
+    return Object.values(fallbackBrands).map(brand => ({
+      ...brand,
+      description: `Copycat recipes for ${brand.name} products.`
+    }));
   }
 }
 
@@ -242,14 +285,33 @@ export async function getAllRecipeSlugs() {
   }
 }
 
+// Fallback brands for static generation
+const fallbackBrands = {
+  'pringles': { name: 'Pringles', slug: 'pringles' },
+  'doritos': { name: 'Doritos', slug: 'doritos' },
+  'lays': { name: 'Lay\'s', slug: 'lays' },
+  'oreo': { name: 'Oreo', slug: 'oreo' },
+  'kfc': { name: 'KFC', slug: 'kfc' },
+  'mcdonalds': { name: 'McDonald\'s', slug: 'mcdonalds' }
+};
+
 // Function to get all brand slugs (for generateStaticParams)
 export async function getAllBrandSlugs() {
   try {
     const brands = await extractBrandsFromRecipes();
-    return Object.keys(brands).map(slug => ({ slug }));
+    const brandSlugs = Object.keys(brands).map(slug => ({ slug }));
+    
+    // If no brands found, use fallback brands
+    if (brandSlugs.length === 0) {
+      console.log('No brands found in database, using fallback brands for static generation');
+      return Object.keys(fallbackBrands).map(slug => ({ slug }));
+    }
+    
+    return brandSlugs;
   } catch (error) {
     console.error('Error fetching all brand slugs:', error);
-    return [];
+    // Return fallback brands in case of error
+    return Object.keys(fallbackBrands).map(slug => ({ slug }));
   }
 }
 
