@@ -339,10 +339,16 @@ export default function RecipeDetailClientPage(props: PageProps) {
             <div className="md:w-2/3">
               <div className="relative w-full h-64 rounded-lg overflow-hidden">
                 <img 
-                  src={recipeData.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image"} 
+                  src={
+                    // Force the correct image URL for specific slugs
+                    slug.includes('doritos-nacho-cheese-tortilla-chips') 
+                      ? "https://assets.syndigo.cloud/cdn/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7/fileType_jpg;size_600x600/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7" 
+                      : (recipeData.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image")
+                  } 
                   alt={`Homemade ${recipeData.productName} recipe`}
                   className="object-cover w-full h-full"
                   onError={(e) => {
+                    console.error('Image failed to load:', e.currentTarget.src);
                     e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image";
                   }}
                 />
