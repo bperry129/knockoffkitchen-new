@@ -146,18 +146,60 @@ export async function getAllRecipes() {
 // Function to get recipes by brand
 export async function getRecipesByBrand(brandSlug) {
   try {
-    const recipesQuery = query(
-      collection(db, 'recipes'), 
-      where('brandSlug', '==', brandSlug),
-      orderBy('createdAt', 'desc')
-    );
-    const recipesSnapshot = await getDocs(recipesQuery);
+    console.log(`Fetching recipes for brand: ${brandSlug}`);
     
-    if (recipesSnapshot.empty) {
+    // First try with exact brandSlug match
+    const exactMatchQuery = query(
+      collection(db, 'recipes'), 
+      where('brandSlug', '==', brandSlug)
+    );
+    
+    const exactMatchSnapshot = await getDocs(exactMatchQuery);
+    
+    if (!exactMatchSnapshot.empty) {
+      console.log(`Found ${exactMatchSnapshot.size} recipes with exact brandSlug match`);
+      return exactMatchSnapshot.docs.map(convertRecipeDoc);
+    }
+    
+    // If no exact match, try case-insensitive match
+    console.log('No exact brandSlug match, trying case-insensitive match');
+    
+    // Get all recipes and filter client-side for case-insensitive match
+    // This is a workaround since Firestore doesn't support case-insensitive queries
+    const allRecipesQuery = query(collection(db, 'recipes'));
+    const allRecipesSnapshot = await getDocs(allRecipesQuery);
+    
+    if (allRecipesSnapshot.empty) {
+      console.log('No recipes found in the database');
       return [];
     }
     
-    return recipesSnapshot.docs.map(convertRecipeDoc);
+    // Filter recipes where brandSlug matches case-insensitive
+    const matchingRecipes = allRecipesSnapshot.docs.filter(doc => {
+      const data = doc.data();
+      return data.brandSlug && 
+             (data.brandSlug.toLowerCase() === brandSlug.toLowerCase() ||
+              data.brandName && data.brandName.toLowerCase() === brandSlug.toLowerCase());
+    });
+    
+    console.log(`Found ${matchingRecipes.length} recipes with case-insensitive match`);
+    
+    if (matchingRecipes.length > 0) {
+      return matchingRecipes.map(convertRecipeDoc);
+    }
+    
+    // If still no match, try to find recipes where the brand name contains the slug
+    console.log('No case-insensitive match, trying partial match on brand name');
+    
+    const partialMatches = allRecipesSnapshot.docs.filter(doc => {
+      const data = doc.data();
+      return data.brandName && 
+             data.brandName.toLowerCase().includes(brandSlug.toLowerCase());
+    });
+    
+    console.log(`Found ${partialMatches.length} recipes with partial brand name match`);
+    
+    return partialMatches.map(convertRecipeDoc);
   } catch (error) {
     console.error(`Error fetching recipes for brand ${brandSlug}:`, error);
     return [];

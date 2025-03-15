@@ -19,9 +19,12 @@ export default function BrandPlaceholder() {
     async function loadBrandData() {
       try {
         // Extract the slug from the URL
-        const slug = pathname?.split('/').pop();
+        const pathParts = pathname?.split('/') || [];
+        const slug = pathParts[pathParts.length - 1];
         
-        if (!slug) {
+        console.log('Loading brand data for slug:', slug);
+        
+        if (!slug || slug === 'brand') {
           setError('Brand not found');
           setLoading(false);
           return;
@@ -36,10 +39,13 @@ export default function BrandPlaceholder() {
           return;
         }
         
+        console.log('Brand data loaded:', brandData);
         setBrand(brandData);
         
         // Fetch recipes for this brand
+        console.log('Fetching recipes for brand:', slug);
         const recipesData = await getRecipesByBrand(slug);
+        console.log('Recipes loaded:', recipesData?.length || 0);
         setRecipes(recipesData || []);
         
         setLoading(false);
@@ -50,7 +56,9 @@ export default function BrandPlaceholder() {
       }
     }
     
-    loadBrandData();
+    if (pathname) {
+      loadBrandData();
+    }
   }, [pathname]);
   
   if (loading) {
