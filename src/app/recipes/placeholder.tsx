@@ -1,5 +1,8 @@
-import { Suspense } from 'react';
+"use client";
+
+import { Suspense, useEffect, useState } from 'react';
 import ClientPage from './[slug]/page.client';
+import { usePathname } from 'next/navigation';
 
 // Simple loading component to use with Suspense
 function LoadingFallback() {
@@ -16,11 +19,26 @@ function LoadingFallback() {
 
 // This is a placeholder page that will be used for all dynamic recipe slugs
 export default function PlaceholderPage() {
+  const pathname = usePathname();
+  const [slug, setSlug] = useState<string>('placeholder');
+
+  useEffect(() => {
+    // Extract the slug from the URL path
+    if (pathname) {
+      const pathParts = pathname.split('/');
+      if (pathParts.length > 2) {
+        const extractedSlug = pathParts[2]; // /recipes/[slug]
+        console.log('Extracted slug from URL:', extractedSlug);
+        setSlug(extractedSlug);
+      }
+    }
+  }, [pathname]);
+
   // We'll use client-side rendering to fetch the actual recipe data
   return (
     <Suspense fallback={<LoadingFallback />}>
       <ClientPage 
-        params={{ slug: 'placeholder' }} 
+        params={{ slug }} 
         searchParamsEntries={[]} 
       />
     </Suspense>

@@ -10,16 +10,12 @@
   to = "/recipes/index.html"
   status = 200
 
-# Specific redirect for the new recipe
-[[redirects]]
-  from = "/recipes/copycat-doritos-nacho-cheese-tortilla-chips-crispy-flavorful"
-  to = "/recipes/placeholder.html"
-  status = 200
-
-# Specific redirect for recipe detail pages
+# Redirect all recipe detail pages to the placeholder page
+# This is the key change - all recipe URLs will use the placeholder page
+# which will then use client-side JavaScript to fetch the correct recipe data
 [[redirects]]
   from = "/recipes/*"
-  to = "/recipes/[...slug].html"
+  to = "/recipes/placeholder.html"
   status = 200
 
 # For all other paths, try to serve the requested path if it exists
