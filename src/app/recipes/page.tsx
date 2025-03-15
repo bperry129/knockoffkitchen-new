@@ -168,7 +168,11 @@ export default function RecipesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredRecipes.map(recipe => (
-            <div key={recipe.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <Link 
+              key={recipe.id}
+              href={`/recipes/${recipe.slug}`}
+              className="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+            >
               <div className="relative h-48 w-full">
                 <img 
                   src={recipe.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image"} 
@@ -202,14 +206,13 @@ export default function RecipesPage() {
                 
                 <p className="text-gray-600 mb-4 line-clamp-3">{recipe.introduction}</p>
                 
-                <Link 
-                  href={`/recipes/${recipe.slug}`}
-                  className="inline-block bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-md px-4 py-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300"
+                <div 
+                  className="inline-block bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-md px-4 py-2 transition-all duration-300"
                 >
                   View Recipe
-                </Link>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

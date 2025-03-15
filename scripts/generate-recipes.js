@@ -253,6 +253,61 @@ Format the response as a JSON object with the following structure:
   }
 }
 
+// Function to standardize category names
+function standardizeCategory(category) {
+  if (!category) return 'Uncategorized';
+  
+  // Convert to lowercase and trim
+  let standardized = category.toLowerCase().trim();
+  
+  // Map of common categories to their standardized form
+  const categoryMap = {
+    'sauce': 'sauces',
+    'sauces': 'sauces',
+    'chip': 'chips',
+    'chips': 'chips',
+    'cookie': 'cookies',
+    'cookies': 'cookies',
+    'spread': 'spreads',
+    'spreads': 'spreads',
+    'dip': 'dips',
+    'dips': 'dips',
+    'snack': 'snacks',
+    'snacks': 'snacks',
+    'drink': 'drinks',
+    'drinks': 'drinks',
+    'dessert': 'desserts',
+    'desserts': 'desserts',
+    'condiment': 'condiments',
+    'condiments': 'condiments',
+    'breakfast': 'breakfast',
+    'dinner': 'dinner',
+    'lunch': 'lunch',
+    'candy': 'candies',
+    'candies': 'candies',
+    'chocolate': 'chocolates',
+    'chocolates': 'chocolates',
+    'cereal': 'cereals',
+    'cereals': 'cereals',
+    'bread': 'breads',
+    'breads': 'breads',
+    'pastry': 'pastries',
+    'pastries': 'pastries',
+    'cracker': 'crackers',
+    'crackers': 'crackers'
+  };
+  
+  // Check if the category is in our map
+  for (const [key, value] of Object.entries(categoryMap)) {
+    if (standardized.includes(key)) {
+      return value.charAt(0).toUpperCase() + value.slice(1); // Capitalize first letter
+    }
+  }
+  
+  // If not found in map, just capitalize the first letter
+  return standardized.charAt(0).toUpperCase() + standardized.slice(1);
+}
+
 // Function to save recipe to Firestore
 async function saveRecipeToFirestore(recipe, productName, brandName) {
   try {
@@ -273,9 +328,14 @@ async function saveRecipeToFirestore(recipe, productName, brandName) {
       console.log('Found image URL from product:', imageUrl);
     }
     
+    // Standardize the category
+    const standardizedCategory = standardizeCategory(recipe.category);
+    console.log(`Standardized category: "${recipe.category}" -> "${standardizedCategory}"`);
+    
     // Add metadata for database storage
     const recipeWithMetadata = {
       ...recipe,
+      category: standardizedCategory, // Use the standardized category
       productName,
       brandName,
       createdAt: serverTimestamp(),
