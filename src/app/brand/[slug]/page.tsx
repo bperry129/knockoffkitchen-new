@@ -21,10 +21,10 @@ export default async function BrandPage({ params }: { params: { slug: string } }
         <p className="text-gray-700 mb-4">{brand.description}</p>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="font-semibold">Founded:</span> {brand.foundedYear}
+            <span className="font-semibold">Founded:</span> {brand.foundedYear || 'N/A'}
           </div>
           <div>
-            <span className="font-semibold">Headquarters:</span> {brand.headquarters}
+            <span className="font-semibold">Headquarters:</span> {brand.headquarters || 'N/A'}
           </div>
         </div>
       </div>
@@ -34,24 +34,28 @@ export default async function BrandPage({ params }: { params: { slug: string } }
         <p className="mb-4">Try our copycat recipes for these popular {brand.name} products:</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {recipes.map((recipe, index) => (
-            <div key={index} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">
-                  <Link href={`/recipes/${recipe.slug}`} className="text-blue-600 hover:underline">
-                    {recipe.title}
+          {recipes && recipes.length > 0 ? (
+            recipes.map((recipe, index) => (
+              <div key={index} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold mb-2">
+                    <Link href={`/recipes/${recipe.slug}`} className="text-blue-600 hover:underline">
+                      {recipe.title}
+                    </Link>
+                  </h3>
+                  <p className="text-gray-600 mb-4">{recipe.description}</p>
+                  <Link 
+                    href={`/recipes/${recipe.slug}`}
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                  >
+                    View Recipe
                   </Link>
-                </h3>
-                <p className="text-gray-600 mb-4">{recipe.description}</p>
-                <Link 
-                  href={`/recipes/${recipe.slug}`}
-                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                >
-                  View Recipe
-                </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No recipes found for this brand.</p>
+          )}
         </div>
       </div>
     </div>
@@ -60,7 +64,16 @@ export default async function BrandPage({ params }: { params: { slug: string } }
 
 // Generate static paths for all brands
 export async function generateStaticParams() {
-  return await getAllBrandSlugs();
+  try {
+    // Get all brand slugs
+    const slugs = await getAllBrandSlugs();
+    
+    // Return the slugs for static generation
+    return slugs;
+  } catch (error) {
+    console.error('Error generating static params for brands:', error);
+    return [];
+  }
 }
 
 // Generate metadata for SEO

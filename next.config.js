@@ -53,7 +53,7 @@ const nextConfig = {
       // Add rewrite for brand pages
       {
         source: '/brand/:slug',
-        destination: '/brand/[slug]',
+        destination: '/app/brand/[slug]/page',
       },
     ];
   },
