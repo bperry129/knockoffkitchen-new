@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, getDocs, query, where, orderBy, limit, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, limit, doc, getDoc, setDoc } from 'firebase/firestore';
 
 // Fallback data for categories if none are found in the database
 const fallbackCategories = {
@@ -196,65 +196,119 @@ export async function getRecipesByCategory(categorySlug) {
 // Function to get a brand by slug
 export async function getBrandBySlug(slug) {
   try {
+    // First, try to get the brand from the brands collection
+    const brandRef = doc(db, 'brands', slug);
+    const brandDoc = await getDoc(brandRef);
+    
+    if (brandDoc.exists()) {
+      return brandDoc.data();
+    }
+    
+    // If not found in brands collection, try to extract from recipes
     const brands = await extractBrandsFromRecipes();
     
-    // Return the brand if found
+    // Return the brand if found in recipes
     if (brands[slug]) {
       return brands[slug];
     }
     
-    // Return fallback brand if available
-    if (fallbackBrands[slug]) {
-      console.log(`Brand ${slug} not found in database, using fallback brand`);
-      return {
-        ...fallbackBrands[slug],
-        description: `Copycat recipes for ${fallbackBrands[slug].name} products.`,
-        foundedYear: 'N/A',
-        headquarters: 'N/A'
-      };
+    // If not found anywhere, create a new brand document based on the slug
+    // This ensures we never return null for a brand page
+    const brandName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const newBrand = {
+      name: brandName,
+      slug: slug,
+      description: `Copycat recipes for ${brandName} products.`,
+      foundedYear: 'N/A',
+      headquarters: 'N/A',
+      createdAt: new Date()
+    };
+    
+    // Save the new brand to the brands collection
+    try {
+      await setDoc(doc(db, 'brands', slug), newBrand);
+      console.log(`Created new brand document for ${brandName} (${slug})`);
+    } catch (saveError) {
+      console.error(`Error saving new brand document for ${slug}:`, saveError);
     }
     
-    return null;
+    return newBrand;
   } catch (error) {
     console.error(`Error fetching brand with slug ${slug}:`, error);
     
-    // Return fallback brand in case of error
-    if (fallbackBrands[slug]) {
-      return {
-        ...fallbackBrands[slug],
-        description: `Copycat recipes for ${fallbackBrands[slug].name} products.`,
-        foundedYear: 'N/A',
-        headquarters: 'N/A'
-      };
-    }
-    
-    return null;
+    // Create a fallback brand as a last resort
+    const brandName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    return {
+      name: brandName,
+      slug: slug,
+      description: `Copycat recipes for ${brandName} products.`,
+      foundedYear: 'N/A',
+      headquarters: 'N/A'
+    };
   }
 }
 
 // Function to get all brands
 export async function getAllBrands() {
   try {
+    // First, try to get brands from the brands collection
+    const brandsSnapshot = await getDocs(collection(db, 'brands'));
+    
+    if (!brandsSnapshot.empty) {
+      return brandsSnapshot.docs.map(doc => doc.data());
+    }
+    
+    // If no brands found in the brands collection, extract from recipes
     const brands = await extractBrandsFromRecipes();
     const brandsList = Object.values(brands);
     
-    // If no brands found, use fallback brands
-    if (brandsList.length === 0) {
-      console.log('No brands found in database, using fallback brands');
-      return Object.values(fallbackBrands).map(brand => ({
-        ...brand,
-        description: `Copycat recipes for ${brand.name} products.`
-      }));
+    if (brandsList.length > 0) {
+      return brandsList;
     }
     
-    return brandsList;
+    // If still no brands found, create them from recipes
+    console.log('No brands found in database, creating from recipes');
+    
+    // Get all recipes to extract brand information
+    const recipesSnapshot = await getDocs(collection(db, 'recipes'));
+    
+    if (recipesSnapshot.empty) {
+      return [];
+    }
+    
+    // Extract unique brands from recipes
+    const uniqueBrands = {};
+    
+    for (const recipeDoc of recipesSnapshot.docs) {
+      const recipeData = recipeDoc.data();
+      
+      if (recipeData.brandName && recipeData.brandSlug) {
+        // Use brandSlug as the key to ensure uniqueness
+        if (!uniqueBrands[recipeData.brandSlug]) {
+          uniqueBrands[recipeData.brandSlug] = {
+            name: recipeData.brandName,
+            slug: recipeData.brandSlug,
+            description: `Copycat recipes for ${recipeData.brandName} products.`,
+            foundedYear: 'N/A',
+            headquarters: 'N/A',
+            createdAt: new Date()
+          };
+          
+          // Save the brand to the brands collection
+          try {
+            await setDoc(doc(db, 'brands', recipeData.brandSlug), uniqueBrands[recipeData.brandSlug]);
+            console.log(`Created brand: ${recipeData.brandName} (${recipeData.brandSlug})`);
+          } catch (error) {
+            console.error(`Error creating brand ${recipeData.brandSlug}:`, error);
+          }
+        }
+      }
+    }
+    
+    return Object.values(uniqueBrands);
   } catch (error) {
     console.error('Error fetching all brands:', error);
-    // Return fallback brands in case of error
-    return Object.values(fallbackBrands).map(brand => ({
-      ...brand,
-      description: `Copycat recipes for ${brand.name} products.`
-    }));
+    return [];
   }
 }
 
@@ -307,26 +361,80 @@ const fallbackBrands = {
   'lays': { name: 'Lay\'s', slug: 'lays' },
   'oreo': { name: 'Oreo', slug: 'oreo' },
   'kfc': { name: 'KFC', slug: 'kfc' },
-  'mcdonalds': { name: 'McDonald\'s', slug: 'mcdonalds' }
+  'mcdonalds': { name: 'McDonald\'s', slug: 'mcdonalds' },
+  'sweet-baby-rays': { name: 'Sweet Baby Ray\'s', slug: 'sweet-baby-rays' },
+  'pace': { name: 'Pace', slug: 'pace' },
+  'taco-bell': { name: 'Taco Bell', slug: 'taco-bell' },
+  'chick-fil-a': { name: 'Chick-fil-A', slug: 'chick-fil-a' },
+  'wendys': { name: 'Wendy\'s', slug: 'wendys' },
+  'subway': { name: 'Subway', slug: 'subway' },
+  'starbucks': { name: 'Starbucks', slug: 'starbucks' },
+  'chipotle': { name: 'Chipotle', slug: 'chipotle' },
+  'panera': { name: 'Panera Bread', slug: 'panera' },
+  'olive-garden': { name: 'Olive Garden', slug: 'olive-garden' },
+  'red-lobster': { name: 'Red Lobster', slug: 'red-lobster' },
+  'cheesecake-factory': { name: 'The Cheesecake Factory', slug: 'cheesecake-factory' },
+  'applebees': { name: 'Applebee\'s', slug: 'applebees' },
+  'chilis': { name: 'Chili\'s', slug: 'chilis' },
+  'outback': { name: 'Outback Steakhouse', slug: 'outback' },
+  'texas-roadhouse': { name: 'Texas Roadhouse', slug: 'texas-roadhouse' },
+  'popeyes': { name: 'Popeyes', slug: 'popeyes' },
+  'burger-king': { name: 'Burger King', slug: 'burger-king' },
+  'arbys': { name: 'Arby\'s', slug: 'arbys' },
+  'dairy-queen': { name: 'Dairy Queen', slug: 'dairy-queen' },
+  'five-guys': { name: 'Five Guys', slug: 'five-guys' },
+  'in-n-out': { name: 'In-N-Out Burger', slug: 'in-n-out' },
+  'shake-shack': { name: 'Shake Shack', slug: 'shake-shack' },
+  'white-castle': { name: 'White Castle', slug: 'white-castle' },
+  'little-caesars': { name: 'Little Caesars', slug: 'little-caesars' },
+  'dominos': { name: 'Domino\'s Pizza', slug: 'dominos' },
+  'pizza-hut': { name: 'Pizza Hut', slug: 'pizza-hut' },
+  'papa-johns': { name: 'Papa John\'s', slug: 'papa-johns' }
 };
 
 // Function to get all brand slugs (for generateStaticParams)
 export async function getAllBrandSlugs() {
   try {
+    // First, try to get brands from the brands collection
+    const brandsSnapshot = await getDocs(collection(db, 'brands'));
+    
+    if (!brandsSnapshot.empty) {
+      return brandsSnapshot.docs.map(doc => ({ slug: doc.id }));
+    }
+    
+    // If no brands found in the brands collection, extract from recipes
     const brands = await extractBrandsFromRecipes();
     const brandSlugs = Object.keys(brands).map(slug => ({ slug }));
     
-    // If no brands found, use fallback brands
-    if (brandSlugs.length === 0) {
-      console.log('No brands found in database, using fallback brands for static generation');
-      return Object.keys(fallbackBrands).map(slug => ({ slug }));
+    if (brandSlugs.length > 0) {
+      return brandSlugs;
     }
     
-    return brandSlugs;
+    // If still no brands found, create them from recipes
+    console.log('No brands found in database, creating from recipes for static generation');
+    
+    // Get all recipes to extract brand information
+    const recipesSnapshot = await getDocs(collection(db, 'recipes'));
+    
+    if (recipesSnapshot.empty) {
+      return [];
+    }
+    
+    // Extract unique brand slugs from recipes
+    const uniqueBrandSlugs = new Set();
+    
+    for (const recipeDoc of recipesSnapshot.docs) {
+      const recipeData = recipeDoc.data();
+      
+      if (recipeData.brandSlug) {
+        uniqueBrandSlugs.add(recipeData.brandSlug);
+      }
+    }
+    
+    return Array.from(uniqueBrandSlugs).map(slug => ({ slug }));
   } catch (error) {
     console.error('Error fetching all brand slugs:', error);
-    // Return fallback brands in case of error
-    return Object.keys(fallbackBrands).map(slug => ({ slug }));
+    return [];
   }
 }
 
