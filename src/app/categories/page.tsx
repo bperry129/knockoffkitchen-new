@@ -5,6 +5,59 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
+// Function to get a gradient based on category name
+const getCategoryGradient = (categoryName: string): string => {
+  // Create a simple hash of the category name to get consistent colors
+  const hash = categoryName.split('').reduce((acc, char) => {
+    return char.charCodeAt(0) + ((acc << 5) - acc);
+  }, 0);
+  
+  // Map of category names to specific gradients for common categories
+  const gradientMap: Record<string, string> = {
+    'Chips': 'linear-gradient(135deg, #FF9D6C 0%, #BB4E75 100%)',
+    'Sauces': 'linear-gradient(135deg, #FF5E62 0%, #FF9966 100%)',
+    'Spreads': 'linear-gradient(135deg, #F09819 0%, #EDDE5D 100%)',
+    'Snacks': 'linear-gradient(135deg, #43C6AC 0%, #191654 100%)',
+    'Cookies': 'linear-gradient(135deg, #C33764 0%, #1D2671 100%)',
+    'Desserts': 'linear-gradient(135deg, #4568DC 0%, #B06AB3 100%)',
+    'Drinks': 'linear-gradient(135deg, #3494E6 0%, #EC6EAD 100%)',
+    'Breakfast': 'linear-gradient(135deg, #FDFC47 0%, #24FE41 100%)',
+    'Dinner': 'linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%)',
+    'Lunch': 'linear-gradient(135deg, #1E9600 0%, #FFF200 100%)',
+  };
+  
+  // Return mapped gradient if exists, otherwise generate one based on hash
+  if (gradientMap[categoryName]) {
+    return gradientMap[categoryName];
+  }
+  
+  // Generate a gradient based on the hash
+  const hue1 = Math.abs(hash % 360);
+  const hue2 = (hue1 + 40) % 360; // Offset for second color
+  
+  return `linear-gradient(135deg, hsl(${hue1}, 80%, 60%) 0%, hsl(${hue2}, 80%, 60%) 100%)`;
+};
+
+// Function to get an icon based on category name
+const getCategoryIcon = (categoryName: string): JSX.Element => {
+  // Map of category names to Font Awesome icons
+  const iconMap: Record<string, JSX.Element> = {
+    'Chips': <i className="fas fa-cookie-bite"></i>,
+    'Sauces': <i className="fas fa-wine-bottle"></i>,
+    'Spreads': <i className="fas fa-mortar-pestle"></i>,
+    'Snacks': <i className="fas fa-cheese"></i>,
+    'Cookies': <i className="fas fa-cookie"></i>,
+    'Desserts': <i className="fas fa-ice-cream"></i>,
+    'Drinks': <i className="fas fa-glass-martini-alt"></i>,
+    'Breakfast': <i className="fas fa-egg"></i>,
+    'Dinner': <i className="fas fa-utensils"></i>,
+    'Lunch': <i className="fas fa-hamburger"></i>,
+  };
+  
+  // Return mapped icon if exists, otherwise use a default icon
+  return iconMap[categoryName] || <i className="fas fa-utensils"></i>;
+};
+
 interface Recipe {
   id: string;
   title: string;
@@ -113,19 +166,17 @@ export default function CategoriesPage() {
               className="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
             >
               <div className="relative h-48 w-full">
-                <img 
-                  src={category.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Category+Image"} 
-                  alt={`${category.name} category`}
-                  className="object-cover w-full h-full"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/1e293b?text=Category+Image";
+                <div 
+                  className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center"
+                  style={{
+                    background: getCategoryGradient(category.name),
                   }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                  <div className="p-6 w-full">
-                    <h2 className="text-2xl font-bold text-white">{category.name}</h2>
-                    <p className="text-white text-sm mt-2">{category.count} {category.count === 1 ? 'Recipe' : 'Recipes'}</p>
+                >
+                  <div className="text-4xl mb-3 text-white">
+                    {getCategoryIcon(category.name)}
                   </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">{category.name}</h2>
+                  <p className="text-white text-sm">{category.count} {category.count === 1 ? 'Recipe' : 'Recipes'}</p>
                 </div>
               </div>
             </Link>

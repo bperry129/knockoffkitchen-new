@@ -52,6 +52,17 @@ const nextConfig = {
       },
     ];
   },
+  
+  // Redirects for old category pages to new categories page
+  async redirects() {
+    return [
+      {
+        source: '/category/:slug',
+        destination: '/categories',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
