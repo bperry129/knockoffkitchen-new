@@ -575,6 +575,13 @@ export default function RecipeDetailClientPage(props: PageProps) {
         </div>
       </div>
       
+      {/* Disclaimer */}
+      <div className="mt-8 mb-8 p-4 bg-gray-50 rounded-lg text-sm text-gray-600 border border-gray-200">
+        <p>
+          KnockoffKitchen.com is an independent recipe website and is not affiliated with, endorsed by, or sponsored by {recipeData.brandName} or any other brand mentioned. The recipes provided are intended to replicate the flavors and textures of popular brand-name products using common ingredients. All trademarks, brand names, and product names are the property of their respective owners. These recipes are created for entertainment and educational purposes only. We make no claims of exact duplication, and actual results may vary. Enjoy your homemade version!
+        </p>
+      </div>
+      
       <div className="mt-8 text-center">
         <Link 
           href="/recipes"

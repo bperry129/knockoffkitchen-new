@@ -110,6 +110,22 @@ export default function RootLayoutClient({
               <i className="fas fa-trademark"></i>
               <span>Brands</span>
             </Link>
+            <Link 
+              href="/about" 
+              className="whitespace-nowrap transition-all duration-300"
+              style={styles.navLink}
+            >
+              <i className="fas fa-info-circle"></i>
+              <span>About</span>
+            </Link>
+            <Link 
+              href="/contact" 
+              className="whitespace-nowrap transition-all duration-300"
+              style={styles.navLink}
+            >
+              <i className="fas fa-envelope"></i>
+              <span>Contact</span>
+            </Link>
           </div>
         </nav>
 
@@ -191,7 +207,13 @@ export default function RootLayoutClient({
               </div>
             </div>
             <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-              <p>© {currentYear} KnockoffKitchen. All rights reserved.</p>
+              <p className="mb-2">© {currentYear} KnockoffKitchen. All rights reserved.</p>
+              <div className="flex justify-center space-x-4">
+                <Link href="/about" className="hover:text-white transition duration-300">About</Link>
+                <Link href="/contact" className="hover:text-white transition duration-300">Contact</Link>
+                <Link href="/terms" className="hover:text-white transition duration-300">Terms of Service</Link>
+                <Link href="/privacy" className="hover:text-white transition duration-300">Privacy Policy</Link>
+              </div>
             </div>
           </div>
         </footer>
