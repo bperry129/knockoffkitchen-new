@@ -361,7 +361,7 @@ export default function RecipeDetailClientPage(props: PageProps) {
                     type="button"
                     onClick={() => setMeasurementSystem('us')}
                     className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
-                      measurementSystem === 'us'
+              <div className="flex justify-end">
                         ? 'bg-indigo-600 text-white'
                         : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                     }`}

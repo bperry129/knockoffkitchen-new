@@ -3,13 +3,13 @@
 export async function generateStaticParams() {
   // For static export, we'll return a few placeholder slugs
   // The actual content will be loaded client-side from Firebase
-  return [
-    { slug: 'homemade-doritos-nacho-cheese' },
+  return [{ slug: 'homemade-doritos-nacho-cheese' },
     { slug: 'homemade-pringles-original' },
     { slug: 'homemade-oreo-cookies' },
     { slug: 'homemade-heinz-ketchup' },
     { slug: 'homemade-lays-potato-chips' },
     // Add the new recipe slug
-    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe' }
-  ];
+    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe' },
+    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-bold-flavor' },
+    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-and-cheesy' }];
 }
