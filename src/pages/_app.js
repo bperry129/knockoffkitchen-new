@@ -2,6 +2,7 @@ import '../app/globals.css';
 import Link from 'next/link';
 import { Playfair_Display, Montserrat } from 'next/font/google';
 import Head from 'next/head';
+import SearchAutocomplete from './components/SearchAutocomplete';
 
 // Use elegant fonts for a premium look
 const playfair = Playfair_Display({
@@ -73,19 +74,8 @@ export default function MyApp({ Component, pageProps }) {
               KnockoffKitchen
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search recipes..."
-                className="pl-10 pr-4 py-2 rounded-full w-64 focus:outline-none focus:ring-2 focus:ring-white transition duration-300"
-                style={styles.searchBox}
-              />
-              <i className="fas fa-search absolute left-3 top-3 text-white"></i>
-            </div>
-            <button className="bg-white bg-opacity-10 hover:bg-opacity-20 p-2 rounded-full transition duration-300">
-              <i className="fas fa-bell text-white"></i>
-            </button>
+          <div className="hidden md:flex items-center">
+            <SearchAutocomplete />
           </div>
           <button className="md:hidden bg-white bg-opacity-10 hover:bg-opacity-20 p-2 rounded-full transition duration-300">
             <i className="fas fa-bars text-white"></i>
@@ -109,7 +99,7 @@ export default function MyApp({ Component, pageProps }) {
             <span>Home</span>
           </Link>
           <Link 
-            href="/category/chips" 
+            href="/categories" 
             className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
             onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
@@ -118,34 +108,8 @@ export default function MyApp({ Component, pageProps }) {
               e.currentTarget.style.transform = '';
             }}
           >
-            <i className="fas fa-cookie-bite"></i>
-            <span>Chips</span>
-          </Link>
-          <Link 
-            href="/category/cookies" 
-            className="whitespace-nowrap transition-all duration-300"
-            style={styles.navLink}
-            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => {
-              e.currentTarget.style.color = styles.navLink.color;
-              e.currentTarget.style.transform = '';
-            }}
-          >
-            <i className="fas fa-cookie"></i>
-            <span>Cookies</span>
-          </Link>
-          <Link 
-            href="/category/sauces" 
-            className="whitespace-nowrap transition-all duration-300"
-            style={styles.navLink}
-            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
-            onMouseOut={(e) => {
-              e.currentTarget.style.color = styles.navLink.color;
-              e.currentTarget.style.transform = '';
-            }}
-          >
-            <i className="fas fa-wine-bottle"></i>
-            <span>Sauces</span>
+            <i className="fas fa-tags"></i>
+            <span>Categories</span>
           </Link>
           <Link 
             href="/brand/pringles" 
@@ -228,7 +192,7 @@ export default function MyApp({ Component, pageProps }) {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/category/chips" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
+                    <Link href="/categories" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
                       <i className="fas fa-chevron-right text-xs"></i>
                       <span>Categories</span>
                     </Link>
