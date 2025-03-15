@@ -164,7 +164,7 @@ export default function SearchAutocomplete() {
               >
                 <i className={`fas ${item.type === 'brand' ? 'fa-trademark' : 'fa-utensils'} mr-2 text-gray-500`}></i>
                 <div>
-                  <div className="font-medium">{item.name}</div>
+                  <div className="font-medium text-gray-900">{item.name}</div>
                   <div className="text-xs text-gray-500 capitalize">{item.type}</div>
                 </div>
               </li>

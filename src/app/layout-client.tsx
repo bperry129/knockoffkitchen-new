@@ -103,28 +103,12 @@ export default function RootLayoutClient({
               <span>Categories</span>
             </Link>
             <Link 
-              href="/brand/pringles" 
+              href="/brands" 
               className="whitespace-nowrap transition-all duration-300"
               style={styles.navLink}
             >
               <i className="fas fa-trademark"></i>
-              <span>Pringles</span>
-            </Link>
-            <Link 
-              href="/brand/doritos" 
-              className="whitespace-nowrap transition-all duration-300"
-              style={styles.navLink}
-            >
-              <i className="fas fa-trademark"></i>
-              <span>Doritos</span>
-            </Link>
-            <Link 
-              href="/brand/lays" 
-              className="whitespace-nowrap transition-all duration-300"
-              style={styles.navLink}
-            >
-              <i className="fas fa-trademark"></i>
-              <span>Lay's</span>
+              <span>Brands</span>
             </Link>
           </div>
         </nav>
@@ -180,10 +164,10 @@ export default function RootLayoutClient({
                       </Link>
                     </li>
                     <li>
-                      <Link href="/brand/pringles" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
-                        <i className="fas fa-chevron-right text-xs"></i>
-                        <span>Brands</span>
-                      </Link>
+                    <Link href="/brands" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
+                      <i className="fas fa-chevron-right text-xs"></i>
+                      <span>Brands</span>
+                    </Link>
                     </li>
                   </ul>
                 </div>

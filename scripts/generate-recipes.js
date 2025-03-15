@@ -376,12 +376,16 @@ async function saveRecipeToFirestore(recipe, productName, brandName) {
     const standardizedCategory = standardizeCategory(recipe.category);
     console.log(`Standardized category: "${recipe.category}" -> "${standardizedCategory}"`);
     
+    // Generate brand slug
+    const brandSlug = brandName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
     // Add metadata for database storage
     const recipeWithMetadata = {
       ...recipe,
       category: standardizedCategory, // Use the standardized category
       productName,
       brandName,
+      brandSlug, // Add the brand slug
       createdAt: serverTimestamp(),
       slug,
       imageUrl,
