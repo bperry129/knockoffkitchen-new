@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import SearchParamsWrapper from './search-params-wrapper';
 
 // Fallback data for static site generation
 const fallbackRecipes = [
@@ -63,21 +64,18 @@ interface Recipe {
 }
 
 export default function RecipesPage() {
-  const searchParams = useSearchParams();
-  const categoryParam = searchParams ? searchParams.get('category') : null;
-  
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam || 'all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Update selectedCategory when categoryParam changes
-  useEffect(() => {
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
+  // Handle category change from URL parameters
+  const handleCategoryChange = useCallback((category: string | null) => {
+    if (category) {
+      setSelectedCategory(category);
     }
-  }, [categoryParam]);
+  }, []);
 
   useEffect(() => {
     async function fetchRecipes() {
@@ -122,6 +120,11 @@ export default function RecipesPage() {
 
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
+      {/* Wrap useSearchParams in a Suspense boundary */}
+      <Suspense fallback={null}>
+        <SearchParamsWrapper onCategoryChange={handleCategoryChange} />
+      </Suspense>
+      
       <h1 className="text-3xl font-bold mb-6 font-serif text-center">Copycat Recipes</h1>
       
       {/* Category Filter */}
