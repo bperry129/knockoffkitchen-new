@@ -301,6 +301,10 @@ export default function RecipeDetailClientPage(props: PageProps) {
   // Use fallback data if no recipe is found or there's an error
   // This ensures the page works for static site generation
   const recipeData = recipe || fallbackRecipeData;
+  
+  // Log the recipe data for debugging
+  console.log('Using recipe data:', recipeData);
+  console.log('Image URL from recipe data:', recipeData.imageUrl);
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
