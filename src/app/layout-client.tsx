@@ -142,20 +142,7 @@ export default function RootLayoutClient({
                   <h3 className="text-2xl font-serif font-bold">KnockoffKitchen</h3>
                 </div>
                 <p className="text-gray-300 max-w-md">Make your favorite brand-name foods at home with our premium copycat recipes.</p>
-                <div className="flex gap-4 mt-6 justify-center md:justify-start">
-                  <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                    <i className="fab fa-facebook-f"></i>
-                  </a>
-                  <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                    <i className="fab fa-twitter"></i>
-                  </a>
-                  <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                    <i className="fab fa-instagram"></i>
-                  </a>
-                  <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                    <i className="fab fa-pinterest"></i>
-                  </a>
-                </div>
+                {/* Social media icons removed */}
               </div>
               <div className="grid grid-cols-2 gap-12 text-center md:text-left">
                 <div>

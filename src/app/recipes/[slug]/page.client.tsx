@@ -423,7 +423,11 @@ export default function RecipeDetailClientPage(props: PageProps) {
                 <ol className="list-decimal pl-5 space-y-3">
                   {recipeData.instructions.map((instruction, index) => {
                     // Remove leading numbers (like "1. " or "1) ") from instructions
-                    const cleanedInstruction = instruction.replace(/^\d+[\.\)]\s+/, '');
+                    let cleanedInstruction = instruction.replace(/^\d+[\.\)]\s+/, '');
+                    
+                    // Also remove "Step X:" or "Step X." patterns from the beginning
+                    cleanedInstruction = cleanedInstruction.replace(/^Step\s+\d+[\.\:]\s*/i, '');
+                    
                     return (
                       <li key={index} className="text-gray-700">{cleanedInstruction}</li>
                     );
