@@ -62,24 +62,7 @@ export default function ContactPage() {
                     </div>
                   </div>
                   
-                  <div className="mt-8">
-                    <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
-                    
-                    <div className="flex space-x-4">
-                      <a href="#" className="bg-indigo-100 p-3 rounded-full hover:bg-indigo-200 transition-colors">
-                        <i className="fab fa-facebook-f text-indigo-600"></i>
-                      </a>
-                      <a href="#" className="bg-indigo-100 p-3 rounded-full hover:bg-indigo-200 transition-colors">
-                        <i className="fab fa-twitter text-indigo-600"></i>
-                      </a>
-                      <a href="#" className="bg-indigo-100 p-3 rounded-full hover:bg-indigo-200 transition-colors">
-                        <i className="fab fa-instagram text-indigo-600"></i>
-                      </a>
-                      <a href="#" className="bg-indigo-100 p-3 rounded-full hover:bg-indigo-200 transition-colors">
-                        <i className="fab fa-pinterest text-indigo-600"></i>
-                      </a>
-                    </div>
-                  </div>
+                  {/* Social media icons removed */}
                 </div>
                 
                 <div className="mt-8 bg-indigo-50 p-6 rounded-lg">

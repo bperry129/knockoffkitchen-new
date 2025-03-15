@@ -316,7 +316,7 @@ export default function RecipeDetailClientPage(props: PageProps) {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
+        <div className="bg-gradient-to-r from-indigo-900 to-indigo-600 px-6 py-4">
           <h1 className="text-2xl font-bold text-white">{recipeData.title}</h1>
           <div className="flex flex-wrap gap-3 mt-2">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
@@ -421,9 +421,13 @@ export default function RecipeDetailClientPage(props: PageProps) {
                   <span>Instructions</span>
                 </h3>
                 <ol className="list-decimal pl-5 space-y-3">
-                  {recipeData.instructions.map((instruction, index) => (
-                    <li key={index} className="text-gray-700">{instruction}</li>
-                  ))}
+                  {recipeData.instructions.map((instruction, index) => {
+                    // Remove leading numbers (like "1. " or "1) ") from instructions
+                    const cleanedInstruction = instruction.replace(/^\d+[\.\)]\s+/, '');
+                    return (
+                      <li key={index} className="text-gray-700">{cleanedInstruction}</li>
+                    );
+                  })}
                 </ol>
               </div>
             </div>
