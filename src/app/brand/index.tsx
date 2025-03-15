@@ -1,0 +1,133 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { getBrandBySlug, getRecipesByBrand } from '@/lib/api';
+
+// This is a client component that will be used as a placeholder for all brand pages
+export default function BrandPlaceholder() {
+  const router = useRouter();
+  const pathname = usePathname();
+  
+  const [loading, setLoading] = useState(true);
+  const [brand, setBrand] = useState<any>(null);
+  const [recipes, setRecipes] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    async function loadBrandData() {
+      try {
+        // Extract the slug from the URL
+        const slug = pathname?.split('/').pop();
+        
+        if (!slug) {
+          setError('Brand not found');
+          setLoading(false);
+          return;
+        }
+        
+        // Fetch the brand data
+        const brandData = await getBrandBySlug(slug);
+        
+        if (!brandData) {
+          setError(`Brand "${slug}" not found`);
+          setLoading(false);
+          return;
+        }
+        
+        setBrand(brandData);
+        
+        // Fetch recipes for this brand
+        const recipesData = await getRecipesByBrand(slug);
+        setRecipes(recipesData || []);
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error loading brand data:', err);
+        setError('Error loading brand data. Please try again later.');
+        setLoading(false);
+      }
+    }
+    
+    loadBrandData();
+  }, [pathname]);
+  
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto py-8 px-4 text-center">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-4"></div>
+          <div className="h-32 bg-gray-200 rounded mb-8"></div>
+          <div className="h-6 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="h-48 bg-gray-200 rounded"></div>
+            <div className="h-48 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto py-8 px-4 text-center">
+        <h1 className="text-3xl font-bold mb-4">Brand Not Found</h1>
+        <p className="mb-4">{error}</p>
+        <Link 
+          href="/brands"
+          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+        >
+          View All Brands
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-4">{brand.name}</h1>
+      <div className="bg-gray-100 p-4 rounded-lg mb-8">
+        <p className="text-gray-700 mb-4">{brand.description}</p>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span className="font-semibold">Founded:</span> {brand.foundedYear || 'N/A'}
+          </div>
+          <div>
+            <span className="font-semibold">Headquarters:</span> {brand.headquarters || 'N/A'}
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h2 className="text-2xl font-semibold mb-4">Copycat Recipes</h2>
+        <p className="mb-4">Try our copycat recipes for these popular {brand.name} products:</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {recipes && recipes.length > 0 ? (
+            recipes.map((recipe, index) => (
+              <div key={index} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold mb-2">
+                    <Link href={`/recipes/${recipe.slug}`} className="text-blue-600 hover:underline">
+                      {recipe.title}
+                    </Link>
+                  </h3>
+                  <p className="text-gray-600 mb-4">{recipe.description}</p>
+                  <Link 
+                    href={`/recipes/${recipe.slug}`}
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                  >
+                    View Recipe
+                  </Link>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No recipes found for this brand.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

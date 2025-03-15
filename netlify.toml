@@ -18,6 +18,12 @@
   to = "/recipes/placeholder.html"
   status = 200
 
+# Redirect for brand pages
+[[redirects]]
+  from = "/brand/*"
+  to = "/brand/index.html"
+  status = 200
+
 # For all other paths, try to serve the requested path if it exists
 [[redirects]]
   from = "/*"
