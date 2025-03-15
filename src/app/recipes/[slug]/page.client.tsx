@@ -319,15 +319,16 @@ export default function RecipeDetailClientPage(props: PageProps) {
         </div>
         
         <div className="p-6">
-          {/* Table of Contents */}
-          <TableOfContents />
-          
-          {/* Recipe Section */}
-          <section id="recipe" className="mb-12">
-            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Recipe</h2>
+          {/* Table of Contents and Image in a flex container */}
+          <div className="flex flex-col md:flex-row gap-6 mb-6">
+            {/* Table of Contents - Left */}
+            <div className="md:w-1/3">
+              <TableOfContents />
+            </div>
             
-            <div className="mb-6 flex justify-center">
-              <div className="relative w-full max-w-lg h-64 rounded-lg overflow-hidden">
+            {/* Image - Right */}
+            <div className="md:w-2/3">
+              <div className="relative w-full h-64 rounded-lg overflow-hidden">
                 <img 
                   src={recipeData.imageUrl || "https://placehold.co/600x400/e2e8f0/1e293b?text=Recipe+Image"} 
                   alt={`Homemade ${recipeData.productName} recipe`}
@@ -338,6 +339,11 @@ export default function RecipeDetailClientPage(props: PageProps) {
                 />
               </div>
             </div>
+          </div>
+          
+          {/* Recipe Section */}
+          <section id="recipe" className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Recipe</h2>
             
             <div className="prose max-w-none mb-6">
               <p>{recipeData.introduction}</p>
