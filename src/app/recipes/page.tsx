@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
@@ -21,7 +22,8 @@ const fallbackRecipes = [
     productName: 'Doritos Nacho Cheese',
     brandName: 'Doritos',
     slug: 'homemade-doritos-nacho-cheese',
-    createdAt: { seconds: 1647532800, nanoseconds: 0 }
+    createdAt: { seconds: 1647532800, nanoseconds: 0 },
+    imageUrl: 'https://assets.syndigo.cloud/cdn/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7/fileType_jpg;size_600x600/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7'
   },
   {
     id: 'fallback2',
@@ -56,6 +58,7 @@ interface Recipe {
   brandName: string;
   slug: string;
   createdAt: any;
+  imageUrl?: string;
 }
 
 export default function RecipesPage() {
@@ -166,6 +169,15 @@ export default function RecipesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredRecipes.map(recipe => (
             <div key={recipe.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              {recipe.imageUrl && (
+                <div className="relative h-48 w-full">
+                  <img 
+                    src={recipe.imageUrl} 
+                    alt={`${recipe.productName} by ${recipe.brandName}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              )}
               <div className="p-6">
                 <div className="flex items-center mb-2">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">

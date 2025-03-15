@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { useParams } from 'next/navigation';
@@ -125,7 +126,8 @@ const fallbackRecipeData = {
   conclusion: "These homemade Doritos-style chips give you all the bold, cheesy flavor of the original but with better ingredients and endless customization options. Plus, they are more economical and have a fresher taste than anything that comes out of a bag. Once you try making these at home, you might never go back to store-bought!",
   productName: 'Doritos Nacho Cheese',
   brandName: 'Doritos',
-  slug: 'homemade-doritos-nacho-cheese'
+  slug: 'homemade-doritos-nacho-cheese',
+  imageUrl: 'https://assets.syndigo.cloud/cdn/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7/fileType_jpg;size_600x600/7d1ecfdf-a3d9-4851-85fa-d6730634e8d7'
 };
 
 interface Recipe {
@@ -181,6 +183,7 @@ interface Recipe {
   productName: string;
   brandName: string;
   slug: string;
+  imageUrl?: string;
 }
 
 // Define the props type for the page component
@@ -322,6 +325,18 @@ export default function RecipeDetailClientPage(props: PageProps) {
           {/* Recipe Section */}
           <section id="recipe" className="mb-12">
             <h2 className="text-2xl font-bold mb-6 border-b pb-2">Recipe</h2>
+            
+            {recipeData.imageUrl && (
+              <div className="mb-6 flex justify-center">
+                <div className="relative w-full max-w-lg h-64 rounded-lg overflow-hidden">
+                  <img 
+                    src={recipeData.imageUrl} 
+                    alt={`${recipeData.productName} by ${recipeData.brandName}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+            )}
             
             <div className="prose max-w-none mb-6">
               <p>{recipeData.introduction}</p>

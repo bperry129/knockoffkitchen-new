@@ -259,6 +259,19 @@ async function saveRecipeToFirestore(recipe, productName, brandName) {
     // Generate slug from recipe title
     const slug = generateSlug(recipe.title);
     
+    // Get the product data to get the imageUrl
+    const productsQuery = query(collection(db, "products"), 
+      where("productName", "==", productName), 
+      where("brandName", "==", brandName),
+      where("status", "==", "pending")
+    );
+    const productsSnapshot = await getDocs(productsQuery);
+    
+    let imageUrl = '';
+    if (!productsSnapshot.empty) {
+      imageUrl = productsSnapshot.docs[0].data().imageUrl || '';
+    }
+    
     // Add metadata for database storage
     const recipeWithMetadata = {
       ...recipe,
@@ -266,6 +279,7 @@ async function saveRecipeToFirestore(recipe, productName, brandName) {
       brandName,
       createdAt: serverTimestamp(),
       slug,
+      imageUrl,
     };
 
     // Save recipe to Firestore
