@@ -173,11 +173,11 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
               <span>Explore Recipes</span>
             </Link>
             <Link 
-              href="/popular" 
+              href="/categories" 
               className="bg-white text-purple-700 px-6 py-3 rounded-full font-medium transition duration-300 hover:shadow-lg flex items-center gap-2"
             >
-              <i className="fas fa-fire"></i>
-              <span>Popular Recipes</span>
+              <i className="fas fa-tags"></i>
+              <span>Browse Categories</span>
             </Link>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
             
             return (
               <Link 
-                href={`/categories`} 
+                href={`/categories#${category.slug}`} 
                 key={category.slug}
                 className="block"
                 onMouseEnter={() => setHoveredCategory(category.slug)}
@@ -284,7 +284,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
                   </div>
                   <p className="text-sm text-gray-500 mb-3 flex items-center">
                     <i className="fas fa-trademark mr-2"></i>
-                    Brand: <Link href={`/brand/${recipe.brandSlug}`} className="text-blue-500 hover:text-blue-700 ml-1">
+                    Brand: <Link href={`/brands#${recipe.brandSlug}`} className="text-blue-500 hover:text-blue-700 ml-1">
                       {recipe.brand}
                     </Link>
                   </p>
@@ -343,7 +343,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
           {brands.map((brand, index) => (
             <Link 
               key={index} 
-              href={`/brand/${brand.slug}`}
+              href={`/brands#${brand.slug}`}
               onMouseEnter={() => setHoveredBrand(brand.slug)}
               onMouseLeave={() => setHoveredBrand(null)}
             >

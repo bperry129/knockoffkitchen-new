@@ -1,124 +1,8 @@
-// Mock data for recipes
-const recipes = {
-  'pringles-bbq-chips-copycat': {
-    title: 'Copycat Pringles BBQ Chips',
-    slug: 'pringles-bbq-chips-copycat',
-    image: '/images/recipes/pringles-bbq.jpg',
-    description: 'Make your own BBQ Pringles at home with this copycat recipe.',
-    brand: 'Pringles',
-    brandSlug: 'pringles',
-    category: 'Chips & Crisps',
-    categorySlug: 'chips',
-    ingredients: [
-      '1 cup potato flakes',
-      '1/2 cup potato starch',
-      '1/4 cup rice flour',
-      '1 tsp BBQ seasoning',
-      '1/2 tsp salt',
-      '1/4 tsp paprika',
-      '1/4 tsp garlic powder',
-      '1/4 tsp onion powder',
-      '2 tbsp vegetable oil',
-      '1/2 cup water'
-    ],
-    instructions: [
-      'Mix dry ingredients in a bowl.',
-      'Add oil and water, mix until a smooth dough forms.',
-      'Roll dough very thin between parchment paper.',
-      'Cut into chip shapes.',
-      'Bake at 350°F for 10-15 minutes until crispy.',
-      'Let cool completely before serving.'
-    ]
-  },
-  'doritos-cool-ranch-copycat': {
-    title: 'Copycat Doritos Cool Ranch',
-    slug: 'doritos-cool-ranch-copycat',
-    image: '/images/recipes/doritos-cool-ranch.jpg',
-    description: 'Recreate the classic Cool Ranch Doritos flavor at home.',
-    brand: 'Doritos',
-    brandSlug: 'doritos',
-    category: 'Chips & Crisps',
-    categorySlug: 'chips',
-    ingredients: [
-      '2 cups masa harina (corn flour)',
-      '1/2 tsp salt',
-      '1 tsp buttermilk powder',
-      '1 tsp dried parsley',
-      '1/2 tsp garlic powder',
-      '1/2 tsp onion powder',
-      '1/4 tsp dried dill',
-      '1/4 tsp dried chives',
-      '1/4 tsp lactic acid powder (or 1 tsp white vinegar)',
-      '3/4 cup hot water',
-      '2 tbsp vegetable oil'
-    ],
-    instructions: [
-      'Mix all dry ingredients in a bowl.',
-      'Add hot water and oil, mix until a dough forms.',
-      'Knead for 2 minutes until smooth.',
-      'Roll very thin between parchment paper.',
-      'Cut into triangles.',
-      'Bake at 350°F for 10-12 minutes until crispy.',
-      'While still warm, sprinkle with more of the seasoning mix if desired.'
-    ]
-  },
-  'lays-salt-vinegar-chips-copycat': {
-    title: 'Copycat Lay\'s Salt & Vinegar Chips',
-    slug: 'lays-salt-vinegar-chips-copycat',
-    image: '/images/recipes/lays-salt-vinegar.jpg',
-    description: 'The perfect tangy and salty homemade potato chips.',
-    brand: 'Lay\'s',
-    brandSlug: 'lays',
-    category: 'Chips & Crisps',
-    categorySlug: 'chips',
-    ingredients: [
-      '4 large russet potatoes',
-      '2 cups white vinegar',
-      '4 cups water',
-      '2 tbsp salt (plus more for sprinkling)',
-      'Vegetable oil for frying'
-    ],
-    instructions: [
-      'Slice potatoes very thin (use a mandoline if possible).',
-      'Soak potato slices in a mixture of vinegar, water, and salt for 30 minutes.',
-      'Drain and pat dry thoroughly.',
-      'Heat oil to 350°F.',
-      'Fry in batches until golden and crispy, about 3-4 minutes.',
-      'Drain on paper towels and immediately sprinkle with salt and a light mist of vinegar.'
-    ]
-  }
-};
+import { db } from './firebase';
+import { collection, getDocs, query, where, orderBy, limit, doc, getDoc } from 'firebase/firestore';
 
-// Mock data for brands
-const brands = {
-  'pringles': {
-    name: 'Pringles',
-    slug: 'pringles',
-    description: 'Pringles is an American brand of stackable potato-based chips. Originally developed by Procter & Gamble in 1967 and marketed as "Pringle\'s Newfangled Potato Chips", the brand was sold to Kellogg\'s in 2012.',
-    foundedYear: 1967,
-    headquarters: 'Battle Creek, Michigan, USA',
-    logo: '/images/brands/pringles-logo.png'
-  },
-  'doritos': {
-    name: 'Doritos',
-    slug: 'doritos',
-    description: 'Doritos is an American brand of flavored tortilla chips produced since 1964 by Frito-Lay, a wholly owned subsidiary of PepsiCo.',
-    foundedYear: 1964,
-    headquarters: 'Plano, Texas, USA',
-    logo: '/images/brands/doritos-logo.png'
-  },
-  'lays': {
-    name: 'Lay\'s',
-    slug: 'lays',
-    description: 'Lay\'s is a brand of potato chips, as well as the name of the company that founded the chip brand in the United States. The brand has also sometimes been referred to as Frito-Lay because both Lay\'s and Fritos are brands sold by the Frito-Lay company.',
-    foundedYear: 1932,
-    headquarters: 'Plano, Texas, USA',
-    logo: '/images/brands/lays-logo.png'
-  }
-};
-
-// Mock data for categories
-const categories = {
+// Fallback data for categories if none are found in the database
+const fallbackCategories = {
   'chips': {
     name: 'Chips & Crisps',
     slug: 'chips',
@@ -136,68 +20,246 @@ const categories = {
   }
 };
 
+// Helper function to convert Firestore document to recipe object
+function convertRecipeDoc(doc) {
+  const data = doc.data();
+  return {
+    id: doc.id,
+    title: data.title || '',
+    slug: data.slug || '',
+    description: data.introduction?.substring(0, 150) + '...' || '',
+    brand: data.brandName || '',
+    brandSlug: data.brandSlug || '',
+    category: data.category || 'Uncategorized',
+    categorySlug: data.category?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'uncategorized',
+    imageUrl: data.imageUrl || '',
+    createdAt: data.createdAt?.toDate() || new Date(),
+    // Add other fields as needed
+  };
+}
+
+// Helper function to extract unique categories from recipes
+async function extractCategoriesFromRecipes() {
+  const categories = {};
+  
+  try {
+    const recipesSnapshot = await getDocs(collection(db, 'recipes'));
+    
+    recipesSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.category) {
+        const categorySlug = data.category.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        
+        if (!categories[categorySlug]) {
+          categories[categorySlug] = {
+            name: data.category,
+            slug: categorySlug,
+            description: `Delicious ${data.category.toLowerCase()} recipes you can make at home.`
+          };
+        }
+      }
+    });
+    
+    return categories;
+  } catch (error) {
+    console.error('Error extracting categories:', error);
+    return fallbackCategories;
+  }
+}
+
+// Helper function to extract unique brands from recipes
+async function extractBrandsFromRecipes() {
+  const brands = {};
+  
+  try {
+    const recipesSnapshot = await getDocs(collection(db, 'recipes'));
+    
+    recipesSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.brandName && data.brandSlug) {
+        if (!brands[data.brandSlug]) {
+          brands[data.brandSlug] = {
+            name: data.brandName,
+            slug: data.brandSlug,
+            description: `Copycat recipes for ${data.brandName} products.`
+          };
+        }
+      }
+    });
+    
+    return brands;
+  } catch (error) {
+    console.error('Error extracting brands:', error);
+    return {};
+  }
+}
+
 // Function to get a recipe by slug
 export async function getRecipeBySlug(slug) {
-  // In a real app, this would fetch from a database
-  return recipes[slug] || null;
+  try {
+    const recipesQuery = query(collection(db, 'recipes'), where('slug', '==', slug));
+    const recipesSnapshot = await getDocs(recipesQuery);
+    
+    if (recipesSnapshot.empty) {
+      return null;
+    }
+    
+    return convertRecipeDoc(recipesSnapshot.docs[0]);
+  } catch (error) {
+    console.error(`Error fetching recipe with slug ${slug}:`, error);
+    return null;
+  }
 }
 
 // Function to get all recipes
 export async function getAllRecipes() {
-  // In a real app, this would fetch from a database
-  return Object.values(recipes);
+  try {
+    const recipesQuery = query(collection(db, 'recipes'), orderBy('createdAt', 'desc'));
+    const recipesSnapshot = await getDocs(recipesQuery);
+    
+    if (recipesSnapshot.empty) {
+      return [];
+    }
+    
+    return recipesSnapshot.docs.map(convertRecipeDoc);
+  } catch (error) {
+    console.error('Error fetching all recipes:', error);
+    return [];
+  }
 }
 
 // Function to get recipes by brand
 export async function getRecipesByBrand(brandSlug) {
-  // In a real app, this would fetch from a database
-  return Object.values(recipes).filter(recipe => recipe.brandSlug === brandSlug);
+  try {
+    const recipesQuery = query(
+      collection(db, 'recipes'), 
+      where('brandSlug', '==', brandSlug),
+      orderBy('createdAt', 'desc')
+    );
+    const recipesSnapshot = await getDocs(recipesQuery);
+    
+    if (recipesSnapshot.empty) {
+      return [];
+    }
+    
+    return recipesSnapshot.docs.map(convertRecipeDoc);
+  } catch (error) {
+    console.error(`Error fetching recipes for brand ${brandSlug}:`, error);
+    return [];
+  }
 }
 
 // Function to get recipes by category
 export async function getRecipesByCategory(categorySlug) {
-  // In a real app, this would fetch from a database
-  return Object.values(recipes).filter(recipe => recipe.categorySlug === categorySlug);
+  try {
+    // Convert slug to proper category name format (e.g., 'chips' to 'Chips')
+    const categories = await extractCategoriesFromRecipes();
+    const category = categories[categorySlug]?.name || '';
+    
+    if (!category) {
+      return [];
+    }
+    
+    const recipesQuery = query(
+      collection(db, 'recipes'), 
+      where('category', '==', category),
+      orderBy('createdAt', 'desc')
+    );
+    const recipesSnapshot = await getDocs(recipesQuery);
+    
+    if (recipesSnapshot.empty) {
+      return [];
+    }
+    
+    return recipesSnapshot.docs.map(convertRecipeDoc);
+  } catch (error) {
+    console.error(`Error fetching recipes for category ${categorySlug}:`, error);
+    return [];
+  }
 }
 
 // Function to get a brand by slug
 export async function getBrandBySlug(slug) {
-  // In a real app, this would fetch from a database
-  return brands[slug] || null;
+  try {
+    const brands = await extractBrandsFromRecipes();
+    return brands[slug] || null;
+  } catch (error) {
+    console.error(`Error fetching brand with slug ${slug}:`, error);
+    return null;
+  }
 }
 
 // Function to get all brands
 export async function getAllBrands() {
-  // In a real app, this would fetch from a database
-  return Object.values(brands);
+  try {
+    const brands = await extractBrandsFromRecipes();
+    return Object.values(brands);
+  } catch (error) {
+    console.error('Error fetching all brands:', error);
+    return [];
+  }
 }
 
 // Function to get a category by slug
 export async function getCategoryBySlug(slug) {
-  // In a real app, this would fetch from a database
-  return categories[slug] || null;
+  try {
+    const categories = await extractCategoriesFromRecipes();
+    return categories[slug] || null;
+  } catch (error) {
+    console.error(`Error fetching category with slug ${slug}:`, error);
+    return null;
+  }
 }
 
 // Function to get all categories
 export async function getAllCategories() {
-  // In a real app, this would fetch from a database
-  return Object.values(categories);
+  try {
+    const categories = await extractCategoriesFromRecipes();
+    return Object.values(categories);
+  } catch (error) {
+    console.error('Error fetching all categories:', error);
+    return Object.values(fallbackCategories);
+  }
 }
 
 // Function to get all recipe slugs (for generateStaticParams)
 export async function getAllRecipeSlugs() {
-  // In a real app, this would fetch from a database
-  return Object.keys(recipes).map(slug => ({ slug }));
+  try {
+    const recipesQuery = query(collection(db, 'recipes'));
+    const recipesSnapshot = await getDocs(recipesQuery);
+    
+    if (recipesSnapshot.empty) {
+      return [];
+    }
+    
+    return recipesSnapshot.docs
+      .map(doc => doc.data().slug)
+      .filter(Boolean)
+      .map(slug => ({ slug }));
+  } catch (error) {
+    console.error('Error fetching all recipe slugs:', error);
+    return [];
+  }
 }
 
 // Function to get all brand slugs (for generateStaticParams)
 export async function getAllBrandSlugs() {
-  // In a real app, this would fetch from a database
-  return Object.keys(brands).map(slug => ({ slug }));
+  try {
+    const brands = await extractBrandsFromRecipes();
+    return Object.keys(brands).map(slug => ({ slug }));
+  } catch (error) {
+    console.error('Error fetching all brand slugs:', error);
+    return [];
+  }
 }
 
 // Function to get all category slugs (for generateStaticParams)
 export async function getAllCategorySlugs() {
-  // In a real app, this would fetch from a database
-  return Object.keys(categories).map(slug => ({ slug }));
+  try {
+    const categories = await extractCategoriesFromRecipes();
+    return Object.keys(categories).map(slug => ({ slug }));
+  } catch (error) {
+    console.error('Error fetching all category slugs:', error);
+    return Object.keys(fallbackCategories).map(slug => ({ slug }));
+  }
 }
