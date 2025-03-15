@@ -99,6 +99,19 @@ export default function MyApp({ Component, pageProps }) {
             <span>Home</span>
           </Link>
           <Link 
+            href="/recipes" 
+            className="whitespace-nowrap transition-all duration-300"
+            style={styles.navLink}
+            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
+          >
+            <i className="fas fa-book-open"></i>
+            <span>Recipes</span>
+          </Link>
+          <Link 
             href="/categories" 
             className="whitespace-nowrap transition-all duration-300"
             style={styles.navLink}
@@ -124,6 +137,32 @@ export default function MyApp({ Component, pageProps }) {
             <i className="fas fa-trademark"></i>
             <span>Brands</span>
           </Link>
+          <Link 
+            href="/about" 
+            className="whitespace-nowrap transition-all duration-300"
+            style={styles.navLink}
+            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
+          >
+            <i className="fas fa-info-circle"></i>
+            <span>About</span>
+          </Link>
+          <Link 
+            href="/contact" 
+            className="whitespace-nowrap transition-all duration-300"
+            style={styles.navLink}
+            onMouseOver={(e) => Object.assign(e.currentTarget.style, styles.navLinkHover)}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = styles.navLink.color;
+              e.currentTarget.style.transform = '';
+            }}
+          >
+            <i className="fas fa-envelope"></i>
+            <span>Contact</span>
+          </Link>
         </div>
       </nav>
 
@@ -140,20 +179,7 @@ export default function MyApp({ Component, pageProps }) {
                 <h3 className="text-2xl font-serif font-bold">KnockoffKitchen</h3>
               </div>
               <p className="text-gray-300 max-w-md">Make your favorite brand-name foods at home with our premium copycat recipes.</p>
-              <div className="flex gap-4 mt-6 justify-center md:justify-start">
-                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                  <i className="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                  <i className="fab fa-instagram"></i>
-                </a>
-                <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition duration-300">
-                  <i className="fab fa-pinterest"></i>
-                </a>
-              </div>
+              {/* Social media icons removed */}
             </div>
             <div className="grid grid-cols-2 gap-12 text-center md:text-left">
               <div>
@@ -163,6 +189,12 @@ export default function MyApp({ Component, pageProps }) {
                     <Link href="/" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
                       <i className="fas fa-chevron-right text-xs"></i>
                       <span>Home</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/recipes" className="text-gray-300 hover:text-white transition duration-300 flex items-center gap-2 justify-center md:justify-start">
+                      <i className="fas fa-chevron-right text-xs"></i>
+                      <span>Recipes</span>
                     </Link>
                   </li>
                   <li>
@@ -199,7 +231,13 @@ export default function MyApp({ Component, pageProps }) {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-            <p>© {new Date().getFullYear()} KnockoffKitchen. All rights reserved.</p>
+            <p className="mb-2">© {new Date().getFullYear()} KnockoffKitchen. All rights reserved.</p>
+            <div className="flex justify-center space-x-4">
+              <Link href="/about" className="hover:text-white transition duration-300">About</Link>
+              <Link href="/contact" className="hover:text-white transition duration-300">Contact</Link>
+              <Link href="/terms" className="hover:text-white transition duration-300">Terms of Service</Link>
+              <Link href="/privacy" className="hover:text-white transition duration-300">Privacy Policy</Link>
+            </div>
           </div>
         </div>
       </footer>
