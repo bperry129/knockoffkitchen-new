@@ -23,8 +23,9 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 // Using a smaller DeepSeek model for cost efficiency
 const MODEL = 'deepseek/deepseek-r1-distill-llama-8b';
 
-// Check if API key is provided
-if (!OPENROUTER_API_KEY) {
+// Check if API key is provided, but only if we're generating recipes
+// Skip this check if we're just updating categories
+if (!OPENROUTER_API_KEY && require.main === module) {
   console.error('Error: OPENROUTER_API_KEY environment variable is required');
   console.error('Run the script with: OPENROUTER_API_KEY=your_key node scripts/generate-recipes.js');
   process.exit(1);
@@ -262,50 +263,93 @@ function standardizeCategory(category) {
   
   // Map of common categories to their standardized form
   const categoryMap = {
-    'sauce': 'sauces',
-    'sauces': 'sauces',
-    'chip': 'chips',
-    'chips': 'chips',
-    'cookie': 'cookies',
-    'cookies': 'cookies',
-    'spread': 'spreads',
-    'spreads': 'spreads',
-    'dip': 'dips',
-    'dips': 'dips',
-    'snack': 'snacks',
-    'snacks': 'snacks',
-    'drink': 'drinks',
-    'drinks': 'drinks',
-    'dessert': 'desserts',
-    'desserts': 'desserts',
-    'condiment': 'condiments',
-    'condiments': 'condiments',
-    'breakfast': 'breakfast',
-    'dinner': 'dinner',
-    'lunch': 'lunch',
-    'candy': 'candies',
-    'candies': 'candies',
-    'chocolate': 'chocolates',
-    'chocolates': 'chocolates',
-    'cereal': 'cereals',
-    'cereals': 'cereals',
-    'bread': 'breads',
-    'breads': 'breads',
-    'pastry': 'pastries',
-    'pastries': 'pastries',
-    'cracker': 'crackers',
-    'crackers': 'crackers'
+    'sauce': 'Sauces',
+    'sauces': 'Sauces',
+    'chip': 'Chips',
+    'chips': 'Chips',
+    'cookie': 'Cookies',
+    'cookies': 'Cookies',
+    'spread': 'Spreads',
+    'spreads': 'Spreads',
+    'dip': 'Dips',
+    'dips': 'Dips',
+    'snack': 'Snacks',
+    'snacks': 'Snacks',
+    'drink': 'Drinks',
+    'drinks': 'Drinks',
+    'dessert': 'Desserts',
+    'desserts': 'Desserts',
+    'condiment': 'Condiments',
+    'condiments': 'Condiments',
+    'breakfast': 'Breakfast',
+    'dinner': 'Dinner',
+    'lunch': 'Lunch',
+    'candy': 'Candies',
+    'candies': 'Candies',
+    'chocolate': 'Chocolates',
+    'chocolates': 'Chocolates',
+    'cereal': 'Cereals',
+    'cereals': 'Cereals',
+    'bread': 'Breads',
+    'breads': 'Breads',
+    'pastry': 'Pastries',
+    'pastries': 'Pastries',
+    'cracker': 'Crackers',
+    'crackers': 'Crackers'
   };
   
   // Check if the category is in our map
   for (const [key, value] of Object.entries(categoryMap)) {
     if (standardized.includes(key)) {
-      return value.charAt(0).toUpperCase() + value.slice(1); // Capitalize first letter
+      return value; // Already capitalized in the map
     }
   }
   
   // If not found in map, just capitalize the first letter
   return standardized.charAt(0).toUpperCase() + standardized.slice(1);
+}
+
+// Function to update existing recipes with standardized categories
+async function updateExistingRecipeCategories() {
+  try {
+    console.log('Updating existing recipe categories...');
+    
+    // Query for all recipes
+    const recipesQuery = query(collection(db, "recipes"));
+    const recipesSnapshot = await getDocs(recipesQuery);
+    
+    if (recipesSnapshot.empty) {
+      console.log('No recipes found to update.');
+      return;
+    }
+    
+    console.log(`Found ${recipesSnapshot.size} recipes to check for category updates.`);
+    
+    // Update each recipe with standardized category
+    let updatedCount = 0;
+    
+    for (const recipeDoc of recipesSnapshot.docs) {
+      const recipe = recipeDoc.data();
+      const currentCategory = recipe.category || 'Uncategorized';
+      const standardizedCategory = standardizeCategory(currentCategory);
+      
+      // Only update if the category has changed
+      if (currentCategory !== standardizedCategory) {
+        console.log(`Updating recipe "${recipe.title}" category from "${currentCategory}" to "${standardizedCategory}"`);
+        
+        const recipeRef = doc(db, "recipes", recipeDoc.id);
+        await updateDoc(recipeRef, {
+          category: standardizedCategory
+        });
+        
+        updatedCount++;
+      }
+    }
+    
+    console.log(`Updated categories for ${updatedCount} recipes.`);
+  } catch (error) {
+    console.error('Error updating recipe categories:', error);
+  }
 }
 
 // Function to save recipe to Firestore
@@ -467,5 +511,13 @@ async function main() {
   }
 }
 
-// Run the script
-main();
+// Export functions for external use
+module.exports = {
+  updateExistingRecipeCategories,
+  main
+};
+
+// Run the script if executed directly
+if (require.main === module) {
+  main();
+}
