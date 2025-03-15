@@ -38,8 +38,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/recipes/:slug',
-        destination: '/recipes/[slug]',
+        source: '/recipes/:slug*',
+        destination: '/recipes/[...slug]',
       },
     ];
   },
