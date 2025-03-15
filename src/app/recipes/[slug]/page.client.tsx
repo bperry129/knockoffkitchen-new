@@ -222,6 +222,7 @@ export default function RecipeDetailClientPage(props: PageProps) {
 
     async function fetchRecipe() {
       try {
+        console.log('Fetching recipe for slug:', slug);
         const recipesQuery = query(collection(db, "recipes"), where("slug", "==", slug));
         const recipesSnapshot = await getDocs(recipesQuery);
         
@@ -229,6 +230,7 @@ export default function RecipeDetailClientPage(props: PageProps) {
         clearTimeout(timeoutId);
         
         if (recipesSnapshot.empty) {
+          console.error('Recipe not found for slug:', slug);
           setError('Recipe not found');
           setLoading(false);
           return;
@@ -238,6 +240,9 @@ export default function RecipeDetailClientPage(props: PageProps) {
           id: recipesSnapshot.docs[0].id,
           ...recipesSnapshot.docs[0].data(),
         } as Recipe;
+        
+        console.log('Recipe data:', recipeData);
+        console.log('Image URL:', recipeData.imageUrl);
         
         setRecipe(recipeData);
         setLoading(false);
