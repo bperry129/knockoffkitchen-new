@@ -11,5 +11,6 @@ export async function generateStaticParams() {
     // Add the new recipe slug
     { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-copycat-recipe' },
     { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-bold-flavor' },
-    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-and-cheesy' }];
+    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-crispy-and-cheesy' },
+    { slug: 'homemade-doritos-nacho-cheese-tortilla-chips-a-crispy-cheesy-snack' }];
 }
