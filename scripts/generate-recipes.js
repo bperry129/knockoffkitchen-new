@@ -270,6 +270,7 @@ async function saveRecipeToFirestore(recipe, productName, brandName) {
     let imageUrl = '';
     if (!productsSnapshot.empty) {
       imageUrl = productsSnapshot.docs[0].data().imageUrl || '';
+      console.log('Found image URL from product:', imageUrl);
     }
     
     // Add metadata for database storage
