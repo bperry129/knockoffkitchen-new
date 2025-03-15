@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
+import SearchAutocomplete from "./components/SearchAutocomplete";
 
 // Custom styles for elegant and premium look
 const styles = {
@@ -66,19 +67,8 @@ export default function RootLayoutClient({
                 KnockoffKitchen
               </span>
             </Link>
-            <div className="hidden md:flex items-center gap-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search recipes..."
-                  className="pl-10 pr-4 py-2 rounded-full w-64 focus:outline-none focus:ring-2 focus:ring-white transition duration-300"
-                  style={styles.searchBox}
-                />
-                <i className="fas fa-search absolute left-3 top-3 text-white"></i>
-              </div>
-              <button className="bg-white bg-opacity-10 hover:bg-opacity-20 p-2 rounded-full transition duration-300">
-                <i className="fas fa-bell text-white"></i>
-              </button>
+            <div className="hidden md:flex items-center">
+              <SearchAutocomplete />
             </div>
             <button className="md:hidden bg-white bg-opacity-10 hover:bg-opacity-20 p-2 rounded-full transition duration-300">
               <i className="fas fa-bars text-white"></i>
