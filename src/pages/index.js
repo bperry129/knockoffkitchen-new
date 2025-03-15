@@ -284,7 +284,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
                   </div>
                   <p className="text-sm text-gray-500 mb-3 flex items-center">
                     <i className="fas fa-trademark mr-2"></i>
-                    Brand: <Link href={`/brand/${recipe.brandSlug}`} className="text-blue-500 hover:text-blue-700 ml-1">
+                    Brand: <Link href={`/brands#${recipe.brandSlug}`} className="text-blue-500 hover:text-blue-700 ml-1">
                       {recipe.brand}
                     </Link>
                   </p>
@@ -343,7 +343,7 @@ export default function Home({ allRecipes, allCategories, allBrands }) {
           {brands.map((brand, index) => (
             <Link 
               key={index} 
-              href={`/brand/${brand.slug}`}
+              href={`/brands#${brand.slug}`}
               onMouseEnter={() => setHoveredBrand(brand.slug)}
               onMouseLeave={() => setHoveredBrand(null)}
             >
