@@ -190,9 +190,9 @@ interface PageProps {
 }
 
 export default function RecipeDetailClientPage(props: PageProps) {
-  const params = useParams();
+  const routeParams = useParams();
   // Use the slug from props if available, otherwise fallback to useParams
-  const slug = props.params?.slug || params.slug as string;
+  const slug = props.params?.slug || (routeParams?.slug as string) || '';
   
   // Convert searchParamsEntries back to an object if needed
   const searchParams = props.searchParamsEntries ? 
@@ -202,7 +202,6 @@ export default function RecipeDetailClientPage(props: PageProps) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('main');
   const [measurementSystem, setMeasurementSystem] = useState<'us' | 'metric'>('us');
 
   useEffect(() => {
@@ -257,61 +256,27 @@ export default function RecipeDetailClientPage(props: PageProps) {
     return () => clearTimeout(timeoutId);
   }, [slug]);
 
-  // Tab navigation component
-  const TabNavigation = () => (
-    <div className="border-b border-gray-200 mb-6">
-      <nav className="-mb-px flex space-x-6 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab('main')}
-          className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'main'
-              ? 'border-indigo-500 text-indigo-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          Recipe
-        </button>
-        <button
-          onClick={() => setActiveTab('variations')}
-          className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'variations'
-              ? 'border-indigo-500 text-indigo-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          Variations
-        </button>
-        <button
-          onClick={() => setActiveTab('tips')}
-          className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'tips'
-              ? 'border-indigo-500 text-indigo-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          Tips & Equipment
-        </button>
-        <button
-          onClick={() => setActiveTab('nutrition')}
-          className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'nutrition'
-              ? 'border-indigo-500 text-indigo-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          Nutrition & Cost
-        </button>
-        <button
-          onClick={() => setActiveTab('faq')}
-          className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'faq'
-              ? 'border-indigo-500 text-indigo-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          FAQ
-        </button>
-      </nav>
+  // Table of contents component
+  const TableOfContents = () => (
+    <div className="bg-gray-50 p-4 rounded-lg mb-6">
+      <h2 className="text-lg font-semibold mb-3">Table of Contents</h2>
+      <ul className="space-y-2">
+        <li>
+          <a href="#recipe" className="text-indigo-600 hover:text-indigo-800">Recipe</a>
+        </li>
+        <li>
+          <a href="#variations" className="text-indigo-600 hover:text-indigo-800">Variations</a>
+        </li>
+        <li>
+          <a href="#tips" className="text-indigo-600 hover:text-indigo-800">Tips & Equipment</a>
+        </li>
+        <li>
+          <a href="#nutrition" className="text-indigo-600 hover:text-indigo-800">Nutrition & Cost</a>
+        </li>
+        <li>
+          <a href="#faq" className="text-indigo-600 hover:text-indigo-800">FAQ</a>
+        </li>
+      </ul>
     </div>
   );
 
@@ -351,222 +316,218 @@ export default function RecipeDetailClientPage(props: PageProps) {
         </div>
         
         <div className="p-6">
-          {/* Tab Navigation */}
-          <TabNavigation />
+          {/* Table of Contents */}
+          <TableOfContents />
           
-          {/* Main Tab - Recipe */}
-          {activeTab === 'main' && (
-            <div>
-              <div className="prose max-w-none mb-6">
-                <p>{recipeData.introduction}</p>
-              </div>
-              
-              <div className="mb-4">
-                <div className="flex justify-end">
-                  <div className="inline-flex rounded-md shadow-sm" role="group">
-                    <button
-                      type="button"
-                      onClick={() => setMeasurementSystem('us')}
-                      className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
-                        measurementSystem === 'us'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                      }`}
-                    >
-                      US
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMeasurementSystem('metric')}
-                      className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
-                        measurementSystem === 'metric'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                      }`}
-                    >
-                      Metric
-                    </button>
-                  </div>
+          {/* Recipe Section */}
+          <section id="recipe" className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Recipe</h2>
+            
+            <div className="prose max-w-none mb-6">
+              <p>{recipeData.introduction}</p>
+            </div>
+            
+            <div className="mb-4">
+              <div className="flex justify-end">
+                <div className="inline-flex rounded-md shadow-sm" role="group">
+                  <button
+                    type="button"
+                    onClick={() => setMeasurementSystem('us')}
+                    className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
+                      measurementSystem === 'us'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                    }`}
+                  >
+                    US
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMeasurementSystem('metric')}
+                    className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
+                      measurementSystem === 'metric'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                    }`}
+                  >
+                    Metric
+                  </button>
                 </div>
               </div>
-              
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
-                {/* Ingredients */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 flex items-center">
-                    <span className="mr-2">🥣</span>
-                    <span>Ingredients ({measurementSystem === 'us' ? 'US' : 'Metric'})</span>
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {recipeData.ingredients[measurementSystem].map((ingredient, index) => (
-                      <li key={index} className="text-gray-700">{ingredient}</li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {/* Instructions */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 flex items-center">
-                    <span className="mr-2">👨‍🍳</span>
-                    <span>Instructions</span>
-                  </h3>
-                  <ol className="list-decimal pl-5 space-y-3">
-                    {recipeData.instructions.map((instruction, index) => (
-                      <li key={index} className="text-gray-700">{instruction}</li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-              
-              <div className="bg-blue-50 p-4 rounded-md mb-6">
-                <h3 className="text-md font-semibold mb-2 flex items-center">
-                  <span className="mr-2">❄️</span>
-                  <span>Storage Instructions</span>
-                </h3>
-                <p className="text-gray-700">{recipeData.storageInstructions}</p>
-              </div>
-              
-              <div className="bg-purple-50 p-4 rounded-md">
-                <h3 className="text-md font-semibold mb-2 flex items-center">
-                  <span className="mr-2">🍽️</span>
-                  <span>Serving Suggestions</span>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              {/* Ingredients */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                  <span className="mr-2">🥣</span>
+                  <span>Ingredients ({measurementSystem === 'us' ? 'US' : 'Metric'})</span>
                 </h3>
                 <ul className="list-disc pl-5 space-y-1">
-                  {recipeData.servingSuggestions.map((suggestion, index) => (
-                    <li key={index} className="text-gray-700">{suggestion}</li>
+                  {recipeData.ingredients[measurementSystem].map((ingredient, index) => (
+                    <li key={index} className="text-gray-700">{ingredient}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              {/* Instructions */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                  <span className="mr-2">👨‍🍳</span>
+                  <span>Instructions</span>
+                </h3>
+                <ol className="list-decimal pl-5 space-y-3">
+                  {recipeData.instructions.map((instruction, index) => (
+                    <li key={index} className="text-gray-700">{instruction}</li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 p-4 rounded-md mb-6">
+              <h3 className="text-md font-semibold mb-2 flex items-center">
+                <span className="mr-2">❄️</span>
+                <span>Storage Instructions</span>
+              </h3>
+              <p className="text-gray-700">{recipeData.storageInstructions}</p>
+            </div>
+            
+            <div className="bg-purple-50 p-4 rounded-md">
+              <h3 className="text-md font-semibold mb-2 flex items-center">
+                <span className="mr-2">🍽️</span>
+                <span>Serving Suggestions</span>
+              </h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {recipeData.servingSuggestions.map((suggestion, index) => (
+                  <li key={index} className="text-gray-700">{suggestion}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
+          
+          {/* Variations Section */}
+          <section id="variations" className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Recipe Variations</h2>
+            
+            <div className="space-y-6">
+              {Object.entries(recipeData.variations).map(([key, value]) => (
+                <div key={key} className="bg-gray-50 p-4 rounded-md">
+                  <h4 className="font-medium text-lg mb-2 capitalize">{key} Version</h4>
+                  <p className="text-gray-700">{value}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-8 bg-indigo-50 p-4 rounded-md">
+              <h3 className="text-lg font-semibold mb-3">Conclusion</h3>
+              <p className="text-gray-700">{recipeData.conclusion}</p>
+            </div>
+          </section>
+          
+          {/* Tips & Equipment Section */}
+          <section id="tips" className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Tips & Equipment</h2>
+            
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4">Pro Tips</h3>
+              <div className="bg-yellow-50 p-4 rounded-md">
+                <ul className="space-y-4">
+                  {recipeData.proTips.map((tip, index) => (
+                    <li key={index} className="flex">
+                      <span className="text-yellow-500 font-bold mr-2">💡</span>
+                      <span className="text-gray-700">{tip}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
-          )}
-          
-          {/* Variations Tab */}
-          {activeTab === 'variations' && (
+            
             <div>
-              <h3 className="text-xl font-semibold mb-4">Recipe Variations</h3>
-              
-              <div className="space-y-6">
-                {Object.entries(recipeData.variations).map(([key, value]) => (
-                  <div key={key} className="bg-gray-50 p-4 rounded-md">
-                    <h4 className="font-medium text-lg mb-2 capitalize">{key} Version</h4>
-                    <p className="text-gray-700">{value}</p>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-8 bg-indigo-50 p-4 rounded-md">
-                <h3 className="text-lg font-semibold mb-3">Conclusion</h3>
-                <p className="text-gray-700">{recipeData.conclusion}</p>
+              <h3 className="text-xl font-semibold mb-4">Special Equipment</h3>
+              <div className="bg-gray-50 p-4 rounded-md">
+                <ul className="grid grid-cols-2 gap-2">
+                  {recipeData.equipment.map((item, index) => (
+                    <li key={index} className="flex items-center">
+                      <span className="text-gray-500 mr-2">🔧</span>
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          )}
+          </section>
           
-          {/* Tips & Equipment Tab */}
-          {activeTab === 'tips' && (
-            <div>
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">Pro Tips</h3>
-                <div className="bg-yellow-50 p-4 rounded-md">
-                  <ul className="space-y-4">
-                    {recipeData.proTips.map((tip, index) => (
-                      <li key={index} className="flex">
-                        <span className="text-yellow-500 font-bold mr-2">💡</span>
-                        <span className="text-gray-700">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Special Equipment</h3>
-                <div className="bg-gray-50 p-4 rounded-md">
-                  <ul className="grid grid-cols-2 gap-2">
-                    {recipeData.equipment.map((item, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="text-gray-500 mr-2">🔧</span>
-                        <span className="text-gray-700">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Nutrition & Cost Tab */}
-          {activeTab === 'nutrition' && (
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Nutritional Comparison</h3>
-              
-              <div className="overflow-hidden bg-white shadow sm:rounded-lg mb-8">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutrient</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Homemade</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store-Bought</th>
+          {/* Nutrition & Cost Section */}
+          <section id="nutrition" className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Nutrition & Cost</h2>
+            
+            <h3 className="text-xl font-semibold mb-4">Nutritional Comparison</h3>
+            
+            <div className="overflow-hidden bg-white shadow sm:rounded-lg mb-8">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutrient</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Homemade</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store-Bought</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {Object.entries(recipeData.nutritionalComparison.homemade).map(([nutrient, value], index) => (
+                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">{nutrient}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{value}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {recipeData.nutritionalComparison.storeBought[nutrient as keyof typeof recipeData.nutritionalComparison.storeBought] || 'N/A'}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {Object.entries(recipeData.nutritionalComparison.homemade).map(([nutrient, value], index) => (
-                      <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">{nutrient}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{value}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {recipeData.nutritionalComparison.storeBought[nutrient as keyof typeof recipeData.nutritionalComparison.storeBought] || 'N/A'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              <h3 className="text-xl font-semibold mb-4">Cost Comparison</h3>
-              
-              <div className="bg-green-50 p-6 rounded-lg">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-white rounded-lg shadow">
-                    <h4 className="text-sm font-medium text-gray-500 uppercase">Homemade</h4>
-                    <p className="mt-2 text-3xl font-extrabold text-gray-900">{recipeData.costComparison.homemade}</p>
-                    <p className="mt-1 text-sm text-gray-500">per serving</p>
-                  </div>
-                  
-                  <div className="text-center p-4 bg-white rounded-lg shadow">
-                    <h4 className="text-sm font-medium text-gray-500 uppercase">Store-Bought</h4>
-                    <p className="mt-2 text-3xl font-extrabold text-gray-900">{recipeData.costComparison.storeBought}</p>
-                    <p className="mt-1 text-sm text-gray-500">per serving</p>
-                  </div>
-                  
-                  <div className="text-center p-4 bg-green-100 rounded-lg shadow">
-                    <h4 className="text-sm font-medium text-gray-500 uppercase">Savings</h4>
-                    <p className="mt-2 text-3xl font-extrabold text-green-600">{recipeData.costComparison.savings}</p>
-                    <p className="mt-1 text-sm text-gray-500">by making at home</p>
-                  </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <h3 className="text-xl font-semibold mb-4">Cost Comparison</h3>
+            
+            <div className="bg-green-50 p-6 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-white rounded-lg shadow">
+                  <h4 className="text-sm font-medium text-gray-500 uppercase">Homemade</h4>
+                  <p className="mt-2 text-3xl font-extrabold text-gray-900">{recipeData.costComparison.homemade}</p>
+                  <p className="mt-1 text-sm text-gray-500">per serving</p>
+                </div>
+                
+                <div className="text-center p-4 bg-white rounded-lg shadow">
+                  <h4 className="text-sm font-medium text-gray-500 uppercase">Store-Bought</h4>
+                  <p className="mt-2 text-3xl font-extrabold text-gray-900">{recipeData.costComparison.storeBought}</p>
+                  <p className="mt-1 text-sm text-gray-500">per serving</p>
+                </div>
+                
+                <div className="text-center p-4 bg-green-100 rounded-lg shadow">
+                  <h4 className="text-sm font-medium text-gray-500 uppercase">Savings</h4>
+                  <p className="mt-2 text-3xl font-extrabold text-green-600">{recipeData.costComparison.savings}</p>
+                  <p className="mt-1 text-sm text-gray-500">by making at home</p>
                 </div>
               </div>
             </div>
-          )}
+          </section>
           
-          {/* FAQ Tab */}
-          {activeTab === 'faq' && (
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
-              
-              <div className="space-y-4">
-                {recipeData.faq.map((item, index) => (
-                  <div key={index} className="border border-gray-200 rounded-md overflow-hidden">
-                    <div className="bg-gray-50 px-4 py-3">
-                      <h4 className="text-md font-medium text-gray-900">{item.question}</h4>
-                    </div>
-                    <div className="px-4 py-3">
-                      <p className="text-gray-700">{item.answer}</p>
-                    </div>
+          {/* FAQ Section */}
+          <section id="faq">
+            <h2 className="text-2xl font-bold mb-6 border-b pb-2">Frequently Asked Questions</h2>
+            
+            <div className="space-y-4">
+              {recipeData.faq.map((item, index) => (
+                <div key={index} className="border border-gray-200 rounded-md overflow-hidden">
+                  <div className="bg-gray-50 px-4 py-3">
+                    <h4 className="text-md font-medium text-gray-900">{item.question}</h4>
                   </div>
-                ))}
-              </div>
+                  <div className="px-4 py-3">
+                    <p className="text-gray-700">{item.answer}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+          </section>
         </div>
       </div>
       
